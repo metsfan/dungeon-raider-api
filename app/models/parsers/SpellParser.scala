@@ -5,6 +5,7 @@ import anorm.{RowParser, ~}
 import models.{SpellEffect, SpellTrigger, Spell}
 import play.api.libs.json.Json._
 import play.api.libs.json._
+import scala.collection.mutable
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,8 +27,8 @@ trait SpellParser {
     get[Int]("cooldown") ~
     get[Int]("spell_type") ~
     get[Int]("cast_type") ~
-    get[Double]("radius") ~
-    get[Double]("range") ~
+    get[Double]("spell_radius") ~
+    get[Double]("spell_range") ~
     get[Int]("shape") map {
       case id ~ name ~ castTime ~ cooldown ~ spellType ~ castType ~
         radius ~ range ~ shape => {
@@ -45,9 +46,10 @@ trait SpellParser {
     get[Int]("max_value") ~
     get[Int]("stat_type") ~
     get[Int]("effect_type") ~
-    get[Int]("school") map {
-      case id ~ spellId ~ minValue ~ maxValue ~ statType ~ effectType ~ school => {
-        SpellEffect(id, spellId, minValue, maxValue, statType, effectType, school)
+    get[Int]("school") ~
+    get[Int]("duration") map {
+      case id ~ spellId ~ minValue ~ maxValue ~ statType ~ effectType ~ school ~ duration => {
+        SpellEffect(id, spellId, minValue, maxValue, statType, effectType, school, duration)
       }
     }
   }
@@ -62,6 +64,53 @@ trait SpellParser {
         SpellTrigger(id, spellId, triggerSpellId, chance, triggerType)
       }
     }
+  }
+
+  def spellFormParser(data: JsValue, id: Int): Spell = {
+    val effects = new mutable.MutableList[SpellEffect]
+
+    val effectsData = (data \ "effects").as[List[JsValue]]
+    effectsData foreach {
+      effect => {
+        val id = (effect \ "id").as[Int]
+        val spell_id = (effect \ "spell_id").as[Int]
+        val min_value = (effect \ "min_value").as[Int]
+        val max_value = (effect \ "max_value").as[Int]
+        val stat_type = (effect \ "stat_type").as[Int]
+        val effect_type = (effect \ "effect_type").as[Int]
+        val school = (effect \ "school").as[Int]
+        val duration = (effect \ "duration").as[Int]
+
+        effects += SpellEffect(id, spell_id, min_value, max_value, stat_type, effect_type, school, duration)
+      }
+    }
+
+    val triggers = new mutable.MutableList[SpellTrigger]
+
+    val triggersData = (data \ "triggers").as[List[JsValue]]
+    triggersData foreach {
+      trigger => {
+        val id = (trigger \ "id").as[Int]
+        val spell_id = (trigger \ "spell_id").as[Int]
+        val trigger_spell_id = (trigger \ "trigger_spell_id").as[Int]
+        val chance = (trigger \ "chance").as[Float]
+        val trigger_type = (trigger \ "trigger_type").as[Int]
+
+        triggers += SpellTrigger(id, spell_id, trigger_spell_id, chance, trigger_type)
+      }
+    }
+
+    val name = (data \ "name").as[String]
+    val cast_time = (data \ "cast_time").as[Int]
+    val cooldown = (data \ "cooldown").as[Int]
+    val spell_type = (data \ "spell_type").as[Int]
+    val cast_type = (data \ "cast_type").as[Int]
+    val radius = (data \ "radius").as[Double]
+    val range = (data \ "range").as[Double]
+    val shape = (data \ "shape").as[Int]
+
+    Spell(id, name, cast_time, cooldown, spell_type, cast_type,
+      radius, range, shape, effects.toList, triggers.toList)
   }
 
   def jsonify(spells: List[Spell]) = {

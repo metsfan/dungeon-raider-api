@@ -10,13 +10,11 @@ package models
 
 trait BaseDataComponent[A] {
 
-  def add(id: String, model: A): Option[A]
-
   def getById(id: String): Option[A]
 
   def all(limit: Int): List[A]
 
-  def update(model: A): Option[A]
+  def save(model: A): Option[A]
 
   def delete(id: String): Int
 

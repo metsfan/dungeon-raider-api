@@ -1,26 +1,31 @@
 package controllers
 
 import play.api.mvc._
-import models.data.SpellData
-import models.parsers.SpellParser
+import models.parsers.CharacterParser
+import models.data.CharacterData
 import play.api.libs.json.Json._
 import java.util.NoSuchElementException
-import play.api.libs.json.{JsValue, Json}
 
-object SpellController extends BaseController with SpellParser {
-  val spellData = new SpellData()
+/**
+ * Created with IntelliJ IDEA.
+ * User: Adam
+ * Date: 11/27/13
+ * Time: 11:01 PM
+ * To change this template use File | Settings | File Templates.
+ */
+object CharacterController extends BaseController with CharacterParser {
+  val characterData = new CharacterData()
 
   def list = Action {
-    Ok(jsonify(spellData.all(200))).as("application/json")
+    Ok(jsonify(characterData.all(200))).as("application/json")
   }
 
   def get(id: String) = Action {
-    Ok(jsonify(spellData.getById(id))).as("application/json")
+    Ok(jsonify(characterData.getById(id))).as("application/json")
   }
 
   def save(id: String) = Action {
     implicit request => {
-
       val body = parseRequestJSON(request)
       var error = "An unknown error occured."
       var description = ""
@@ -29,7 +34,7 @@ object SpellController extends BaseController with SpellParser {
 
       if (body != null) {
         try {
-          val saved = spellData.save(spellFormParser(body, id.toInt))
+          val saved = characterData.save(charFormParser(body, id.toInt))
           if (saved.isDefined) {
             result = toJson(saved).toString
             success = true
@@ -62,7 +67,7 @@ object SpellController extends BaseController with SpellParser {
   }
 
   def delete(id: String) = Action {
-    val result = spellData.delete(id)
+    val result = characterData.delete(id)
     Ok(toJson(Map("result" -> result))).as("application/json")
   }
 }
