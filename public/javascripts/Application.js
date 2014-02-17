@@ -17,14 +17,29 @@ var Application = Backbone.Router.extend({
     },
 
     execute: function(callback, args) {
-        if (args[args.length - 1] != null) {
-            var params = Util.parseQueryString(args.pop());
-            args.push(params);
+        var params = {}
+        var backArg = args.pop();
+        if (backArg != null) {
+            var qstringParams = Util.parseQueryString(backArg);
+            _.extend(params, qstringParams);
         }
+
+        if (this.postArgs) {
+            _.extend(params, this.postArgs);
+            this.postArgs = null;
+        }
+
+        args.push(params);
 
         if (callback) {
             callback.apply(this, args);
         }
+    },
+
+    navigate: function(fragment, options) {
+        this.postArgs = options.args;
+
+        Backbone.Router.prototype.navigate.apply(this, arguments);
     }
 
 

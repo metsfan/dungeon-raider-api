@@ -21,6 +21,12 @@ var ClassSpellSelectView = Backbone.View.extend({
     },
 
     addSpell: function() {
-        app.navigate("spell?class_id=" + this.classData.attributes.id, {trigger: true, classData: this.classData.attributes});
+        var options = {
+            trigger: true,
+            args: {
+                "classData" : this.classData
+            }
+        }
+        app.navigate("spell", options);
     }
 });

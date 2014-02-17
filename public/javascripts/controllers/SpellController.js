@@ -29,18 +29,20 @@ var SpellController = {
         });
     },
 
-    spell: function(id) {
-
+    editSpell: function(id, args) {
         if (id > 0) {
             Network.get("/spell/" + id, function(data) {
                 var view = new ClassSpellEditView(data);
+                view.classData = args.classData;
                 view.render();
             });
-        } else {
-            var view = new ClassSpellEditView({});
-            view.render();
         }
+    },
 
+    createSpell: function(args) {
+        var view = new ClassSpellEditView({});
+        view.classData = args.classData;
+        view.render();
     },
 
     // Private

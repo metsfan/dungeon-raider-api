@@ -5,8 +5,13 @@ var ClassSpellEditView = Backbone.View.extend({
     },
 
     render: function() {
+        if (!this.classData) {
+            app.navigate("spells", {trigger: true});
+        }
+
         var data = {
-            "spell" : this.spell
+            "spell" : this.spell,
+            "classData" : this.classData
         }
 
         Template.load("spell", data, "#content");
