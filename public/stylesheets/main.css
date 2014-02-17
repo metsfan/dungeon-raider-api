@@ -1,0 +1,16 @@
+#header {
+    border-bottom: 1px solid black;
+}
+
+#body {
+}
+
+#sidebar {
+    float: left;
+    width: 200px;
+}
+
+#content {
+    float: left;
+    margin-left: 20px;
+}

@@ -1,8 +1,8 @@
 package controllers
 
 import play.api.mvc._
-import models.parsers.CharacterParser
-import models.data.CharacterData
+import models.parsers.NPCharacterParser
+import models.data.NPCharacterData
 import play.api.libs.json.Json._
 import java.util.NoSuchElementException
 
@@ -13,8 +13,8 @@ import java.util.NoSuchElementException
  * Time: 11:01 PM
  * To change this template use File | Settings | File Templates.
  */
-object CharacterController extends BaseController with CharacterParser {
-  val characterData = new CharacterData()
+object NPCharacterController extends BaseController with NPCharacterParser {
+  val characterData = new NPCharacterData()
 
   def list = Action {
     Ok(jsonify(characterData.all(200))).as("application/json")

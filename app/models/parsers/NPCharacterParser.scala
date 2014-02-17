@@ -14,7 +14,7 @@ import scala.collection.mutable
  * Time: 11:08 PM
  * To change this template use File | Settings | File Templates.
  */
-trait CharacterParser {
+trait NPCharacterParser {
 
   implicit val charSpellWrites = writes[NPCharacterSpell]
   implicit val charWrites = writes[NPCharacter]

@@ -1,27 +1,23 @@
 package models.data
 
-import anorm._
-import models.{NPCharacter, CharacterDataComponent}
-import models.parsers.CharacterParser
-import models.data.query.{CharacterQuery}
+import models.parsers.NPCharacterParser
 import play.api.db.DB
 import play.api.Play.current
+import anorm._
+import models.query.NPCharacterQuery
+import anorm.ParameterValue
+import models._
 
 /**
- * Created with IntelliJ IDEA.
- * User: Adam
- * Date: 11/28/13
- * Time: 10:13 AM
- * To change this template use File | Settings | File Templates.
+ * Created by Adam on 2/10/14.
  */
-class CharacterData extends CharacterDataComponent with CharacterParser {
-
+class NPCharacterData extends NPCharacterParser {
   def getById(id: String): Option[NPCharacter] = {
     DB.withConnection {
       implicit conn => {
-        val spells = SQL(CharacterQuery.selectSpellsById).on("id" -> id).as(charSpellRowParser *).toList
+        val spells = SQL(NPCharacterQuery.selectSpellsById).on("id" -> id.toInt).as(charSpellRowParser *).toList
 
-        SQL(CharacterQuery.selectById).on("id" -> id).as(charRowParser(spells) *).headOption
+        SQL(NPCharacterQuery.selectById).on("id" -> id.toInt).as(charRowParser(spells) *).headOption
       }
     }
   }
@@ -29,9 +25,9 @@ class CharacterData extends CharacterDataComponent with CharacterParser {
   def all(limit: Int): List[NPCharacter] = {
     DB.withConnection {
       implicit conn => {
-        val spells = SQL(CharacterQuery.selectSpells).as(charSpellRowParser *).toList
+        val spells = SQL(NPCharacterQuery.selectSpells).as(charSpellRowParser *).toList
 
-        SQL(CharacterQuery.selectAll).as(charRowParser(spells) *).toList
+        SQL(NPCharacterQuery.selectAll).as(charRowParser(spells) *).toList
       }
     }
   }
@@ -53,9 +49,9 @@ class CharacterData extends CharacterDataComponent with CharacterParser {
 
         if (model.id > 0) {
           charFields ++= Seq[(Any, ParameterValue[_])]("id" -> model.id)
-          SQL(CharacterQuery.updateCharacter).on(charFields: _*).executeUpdate()
+          SQL(NPCharacterQuery.updateCharacter).on(charFields: _*).executeUpdate()
         } else {
-          SQL(CharacterQuery.insertCharacter).on(charFields: _*).executeInsert().map {
+          SQL(NPCharacterQuery.insertCharacter).on(charFields: _*).executeInsert().map {
             id => model.id = id.toInt
           }
         }
@@ -69,9 +65,9 @@ class CharacterData extends CharacterDataComponent with CharacterParser {
 
             if (spell.id > 0) {
               spellFields ++= Seq[(Any, ParameterValue[_])]("id" -> spell.id)
-              SQL(CharacterQuery.updateSpell).on(spellFields: _*).executeUpdate()
+              SQL(NPCharacterQuery.updateSpell).on(spellFields: _*).executeUpdate()
             } else {
-              SQL(CharacterQuery.insertSpell).on(spellFields: _*).executeInsert().map {
+              SQL(NPCharacterQuery.insertSpell).on(spellFields: _*).executeInsert().map {
                 id => spell.id = id.toInt
               }
             }
@@ -86,8 +82,8 @@ class CharacterData extends CharacterDataComponent with CharacterParser {
   def delete(id: String): Int = {
     DB.withConnection {
       implicit conn => {
-        SQL(CharacterQuery.deleteSpells).on("id" -> id).executeUpdate
-        SQL(CharacterQuery.deleteCharacter).on("id" -> id).executeUpdate
+        SQL(NPCharacterQuery.deleteSpells).on("id" -> id).executeUpdate
+        SQL(NPCharacterQuery.deleteCharacter).on("id" -> id).executeUpdate
       }
     }
   }

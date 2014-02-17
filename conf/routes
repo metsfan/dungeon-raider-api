@@ -2,18 +2,25 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Spell
+# Spells
 GET           /spells               controllers.SpellController.list
+GET           /spells/:classId      controllers.SpellController.listByClass(classId)
 GET           /spell/:id            controllers.SpellController.get(id)
 POST          /spell/:id            controllers.SpellController.save(id)
 DELETE        /spell/:id            controllers.SpellController.delete(id)
 
-# Character
-GET           /characters           controllers.CharacterController.list
-GET           /character/:id        controllers.CharacterController.get(id)
-POST          /character/:id        controllers.CharacterController.save(id)
-DELETE        /character/:id        controllers.CharacterController.delete(id)
+# Non-player Characters
+GET           /npcharacters           controllers.NPCharacterController.list
+GET           /npcharacter/:id        controllers.NPCharacterController.get(id)
+POST          /npcharacter/:id        controllers.NPCharacterController.save(id)
+DELETE        /npcharacter/:id        controllers.NPCharacterController.delete(id)
 
+# Player Characters
+
+GET           /pcharacters/:user_id    controllers.PCharacterController.list(user_id)
+GET           /pcharacter/:id          controllers.PCharacterController.get(id)
+
+GET           /                        controllers.Assets.at(path="/public/html", file="index.html")
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file         controllers.Assets.at(path="/public", file)

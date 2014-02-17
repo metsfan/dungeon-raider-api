@@ -1,22 +1,25 @@
 package models.data
 
-import anorm._
-import models.{SpellTrigger, SpellEffect, Spell, SpellDataComponent}
-import models.data.query.SpellQuery
-import models.parsers.SpellParser
 import play.api.db.DB
 import play.api.Play.current
+import anorm._
+import models.query.SpellQuery
+import anorm.ParameterValue
 import java.sql.Connection
+import models._
+import models.parsers.SpellParser
 
-class SpellData extends SpellDataComponent with SpellParser {
-
+/**
+ * Created by Adam on 2/10/14.
+ */
+class SpellData extends SpellParser {
   def getById(id: String): Option[Spell] = {
     DB.withConnection {
       implicit conn => {
         val effects = getEffectsForSpell(conn, id)
         val triggers = getTriggersForSpell(conn, id)
 
-        SQL(SpellQuery.selectById).on("spellId" -> id).as(spellRowParser(effects, triggers) *).headOption
+        SQL(SpellQuery.selectById).on("spellId" -> id.toInt).as(spellRowParser(effects, triggers) *).headOption
       }
     }
   }
@@ -28,6 +31,15 @@ class SpellData extends SpellDataComponent with SpellParser {
         val triggers = getAllTriggers(conn)
         SQL(SpellQuery.selectAll).as(spellRowParser(effects, triggers) *).toList
       }
+    }
+  }
+
+  def allForClass(id: String): List[Spell] = {
+    DB.withConnection { implicit conn =>
+      val effects = getAllEffects(conn)
+      val triggers = getAllTriggers(conn)
+
+      SQL(SpellQuery.selectAllForClass).on("classId" -> id.toInt).as(spellRowParser(effects, triggers) *).toList
     }
   }
 
@@ -128,10 +140,10 @@ class SpellData extends SpellDataComponent with SpellParser {
   }
 
   def getEffectsForSpell(implicit conn: Connection, spellId: String): List[SpellEffect] = {
-    SQL(SpellQuery.selectEffectsForSpell).on("spellId" -> spellId).as(spellEffectRowParser *).toList
+    SQL(SpellQuery.selectEffectsForSpell).on("spellId" -> spellId.toInt).as(spellEffectRowParser *).toList
   }
 
   def getTriggersForSpell(implicit conn: Connection, spellId: String): List[SpellTrigger] = {
-    SQL(SpellQuery.selectTriggersForSpell).on("spellId" -> spellId).as(spellTriggerRowParser *).toList
+    SQL(SpellQuery.selectTriggersForSpell).on("spellId" -> spellId.toInt).as(spellTriggerRowParser *).toList
   }
 }

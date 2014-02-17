@@ -1,4 +1,4 @@
-package models.data.query
+package models.query
 
 /**
  * Created with IntelliJ IDEA.
@@ -7,7 +7,7 @@ package models.data.query
  * Time: 10:14 AM
  * To change this template use File | Settings | File Templates.
  */
-object CharacterQuery {
+object NPCharacterQuery {
 
   lazy final val selectAll =
     """

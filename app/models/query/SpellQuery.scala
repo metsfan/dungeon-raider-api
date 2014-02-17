@@ -1,4 +1,4 @@
-package models.data.query
+package models.query
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,6 +22,15 @@ object SpellQuery {
   lazy final val selectAllTriggers =
     """
       |SELECT * FROM spell_trigger
+    """.stripMargin
+
+  lazy final val selectAllForClass =
+    """
+      |SELECT s.*
+      |FROM spell s
+      |INNER JOIN class_spell cs ON cs.spell_id=s.id
+      |WHERE cs.class_id={classId}
+      |ORDER BY s.id
     """.stripMargin
 
   lazy final val selectById =

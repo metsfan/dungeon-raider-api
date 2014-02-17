@@ -1,17 +1,19 @@
 package controllers
 
-import play.api.mvc._
-import models.data.SpellData
-import models.parsers.SpellParser
 import play.api.libs.json.Json._
-import java.util.NoSuchElementException
-import play.api.libs.json.{JsValue, Json}
+import models.parsers.SpellParser
+import models.data.SpellData
+import play.api.mvc.Action
 
 object SpellController extends BaseController with SpellParser {
   val spellData = new SpellData()
 
   def list = Action {
     Ok(jsonify(spellData.all(200))).as("application/json")
+  }
+
+  def listByClass(classId: String) = Action {
+    Ok(jsonify(spellData.allForClass(classId))).as("application/json")
   }
 
   def get(id: String) = Action {

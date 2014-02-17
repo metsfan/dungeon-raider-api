@@ -1,0 +1,10 @@
+<div id="classes">
+    <h3>Edit Class Spells</h3>
+    <ul>
+        <% classes.each(function(charClass) { %>
+        <li>
+            <a href="#spells/<%= charClass.attributes.id %>"><%= charClass.attributes.name %></a>
+        </li>
+        <% }) %>
+    </ul>
+</div>
