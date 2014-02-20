@@ -1,0 +1,26 @@
+<div class="spell-trigger-container">
+    <input type="hidden" id="trigger.id-<%= index %>" value="0" />
+    <div class="form-element-container">
+        <label class="form-element-label">Trigger Spell</label>
+        <div class="form-element">
+            <select id="trigger.trigger_spell_id-<%= index %>">
+            </select>
+        </div>
+    </div>
+    <div class="form-element-container">
+        <label class="form-element-label">Trigger</label>
+        <div class="form-element">
+            <select id="trigger.trigger_type-<%= index %>">
+                <option value="0">Start</option>
+                <option value="1">End</option>
+                <option value="2">Damage</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-element-container">
+        <label class="form-element-label">Chance (%)</label>
+        <div class="form-element">
+            <input type="text" id="trigger.chance-<%= index %>" value="" />
+        </div>
+    </div>
+</div>

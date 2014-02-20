@@ -1,16 +1,83 @@
 <div id="spell-edit-form-container">
+    <input type="hidden" id="spell_id" value="0" />
     <div id="breadcrumbs">
         <a href="#spells">Edit Class Spells</a> >>
-        <a href="#spells/<%= classData.attributes.id %>"><%= classData.attributes.name %> Spells</a> >>
+        <a href="#spells/<%= classData.id %>"><%= classData.name %> Spells</a> >>
         Create Spell
     </div>
 
-    <form id="spell-edit-form">
-        <div class="form-element-container">
-            <label class="form-element-label">Name</label>
-            <div class="form-element">
-                <input type="text" name="name" value="" />
-            </div>
+    <div class="form-element-container">
+        <label class="form-element-label">Name</label>
+        <div class="form-element">
+            <input type="text" id="name" value="" />
         </div>
-    </form>
+    </div>
+    <div class="form-element-container">
+        <label class="form-element-label">Cast Time</label>
+        <div class="form-element">
+            <input type="text" id="cast_time" value="" />
+        </div>
+    </div>
+    <div class="form-element-container">
+        <label class="form-element-label">Cooldown (seconds)</label>
+        <div class="form-element">
+            <input type="text" id="cooldown" value="" />
+        </div>
+    </div>
+    <div class="form-element-container">
+        <label class="form-element-label">Spell Type</label>
+        <div class="form-element">
+            <select id="spell_type">
+                <option value="0">Melee</option>
+                <option value="1">Ranged</option>
+                <option value="2">Targeted AOE</option>
+                <option value="3">Caster AOE</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-element-container">
+        <label class="form-element-label">Cast Type</label>
+        <div class="form-element">
+            <select id="cast_type">
+                <option value="0">Instant</option>
+                <option value="1">Timed</option>
+                <option value="2">Channelled</option>
+                <option value="3">Timed then Channelled</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-element-container">
+        <label class="form-element-label">Range (meters)</label>
+        <div class="form-element">
+            <input type="text" id="range" value="" />
+        </div>
+    </div>
+    <div class="form-element-container">
+        <label class="form-element-label">Radius (meters)</label>
+        <div class="form-element">
+            <input type="text" id="radius" value="" />
+        </div>
+    </div>
+    <div class="form-element-container">
+        <label class="form-element-label">Shape</label>
+        <div class="form-element">
+            <select id="shape">
+                <option value="0">Circle</option>
+                <option value="1">Frontal Cone</option>
+            </select>
+        </div>
+    </div>
+
+    <h3>Effects:</h3>
+    <div id="spell-effects"></div>
+    <p><button id="add-effect-button">Add Effect</button></p>
+
+
+    <h3>Triggers:</h3>
+    <div id="spell-triggers"></div>
+    <p><button id="add-trigger-button">Add Trigger</button></p>
+
+    <div class="form-element-container">
+        <button id="spell-submit">Save</button>
+    </div>
 </div>

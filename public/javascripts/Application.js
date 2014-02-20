@@ -16,7 +16,25 @@ var Application = Backbone.Router.extend({
 
     },
 
-    execute: function(callback, args) {
+    navigate: function(fragment, options) {
+        if (options.args) {
+            $.cookie("postData", JSON.stringify(options.args));
+            $.cookie("postUrl", fragment);
+        } else {
+            $.removeCookie("postData");
+        }
+
+        Backbone.Router.prototype.navigate.apply(this, arguments);
+    },
+
+    _extractParameters: function(route, fragment) {
+        var args = Backbone.Router.prototype._extractParameters.apply(this, arguments);
+
+        var postUrl = $.cookie("postUrl");
+        if (postUrl != fragment) {
+            $.removeCookie("postData");
+        }
+
         var params = {}
         var backArg = args.pop();
         if (backArg != null) {
@@ -24,33 +42,29 @@ var Application = Backbone.Router.extend({
             _.extend(params, qstringParams);
         }
 
-        if (this.postArgs) {
-            _.extend(params, this.postArgs);
-            this.postArgs = null;
+        var postData = $.cookie("postData");
+        if (postData) {
+            _.extend(params, JSON.parse(postData));
         }
 
         args.push(params);
 
-        if (callback) {
-            callback.apply(this, args);
-        }
-    },
-
-    navigate: function(fragment, options) {
-        this.postArgs = options.args;
-
-        Backbone.Router.prototype.navigate.apply(this, arguments);
+        return args;
     }
 
 
 });
 
 var Template = {
-    load: function(template, data, selector) {
+    load: function(template, data, selector, append) {
         var baseUrl = "/assets/html/";
         $.when($.get(baseUrl + template + ".html")).done(function(tmplData) {
             var html = _.template(tmplData, data);
-            $(selector).html(html);
+            if (append) {
+                $(selector).html($(selector).html() + html);
+            } else {
+                $(selector).html(html);
+            }
         });
     }
 }

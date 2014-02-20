@@ -24,7 +24,7 @@ var ClassSpellSelectView = Backbone.View.extend({
         var options = {
             trigger: true,
             args: {
-                "classData" : this.classData
+                "classData" : this.classData.attributes
             }
         }
         app.navigate("spell", options);

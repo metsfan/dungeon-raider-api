@@ -1,0 +1,54 @@
+<div class="spell-effect-container" id="spell-effect-container-<%= index %>">
+    <input type="hidden" id="effect.id-<%= index %>" value="0" />
+    <div class="form-element-container">
+        <label class="form-element-label">Min Value</label>
+        <div class="form-element">
+            <input type="text" id="effect.min_value-<%= index %>" value="" />
+        </div>
+    </div>
+    <div class="form-element-container">
+        <label class="form-element-label">Max Value</label>
+        <div class="form-element">
+            <input type="text" id="effect.max_value-<%= index %>" value="" />
+        </div>
+    </div>
+    <div class="form-element-container">
+        <label class="form-element-label">Duration</label>
+        <div class="form-element">
+            <input type="text" id="effect.duration-<%= index %>" value="" />
+        </div>
+    </div>
+    <div class="form-element-container">
+        <label class="form-element-label">Stat Type</label>
+        <div class="form-element">
+            <select id="effect.stat-<%= index %>">
+                <option value="-1">N/A</option>
+                <option value="0">Health</option>
+                <option value="1">Power</option>
+                <option value="2">Energy</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-element-container">
+        <label class="form-element-label">Effect Type</label>
+        <div class="form-element">
+            <select id="effect.effect-<%= index %>">
+                <option value="0">Instant</option>
+                <option value="1">Over Time</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-element-container">
+        <label class="form-element-label">School</label>
+        <div class="form-element">
+            <select id="effect.school-<%= index %>">
+                <option value="-1">N/A</option>
+                <option value="0">Physical</option>
+                <option value="1">Magical</option>
+                <option value="2">Healing</option>
+                <option value="3">Buff</option>
+                <option value="4">Debuff</option>
+            </select>
+        </div>
+    </div>
+</div>
