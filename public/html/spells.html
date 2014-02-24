@@ -4,6 +4,42 @@
         <%= classData.attributes.name %> Spells
     </div>
 
-    <h3><%= classData.attributes.name %> Spells</h3>
-    <button id="add-spell-button">Add Spell</button>
+    <h2><%= classData.attributes.name %> Spells</h2>
+
+    <% _.each(spells, function(spells) { %>
+    <div class="spell-table-header"><%= spells.title %> Spells</div>
+    <table class="spells-table" id="spells-table-<%= spells.name %>">
+        <thead>
+            <tr>
+                <th class="name-cell">Name</th>
+                <th class="type-cell">Type</th>
+                <th class="edit-cell">Edit</th>
+                <th class="delete-cell">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% _.each(spells.list, function(spell) { %>
+            <tr data-spell-id="<%= spell.id %>" id="spell-row-<%= spell.id %>" data-slot="<%= spell.slot ? spell.slot : '' %>">
+                <td><%= spell.name %></td>
+                <td>
+                    <select class="spell-category">
+                        <option value="core">Core</option>
+                        <option value="cooldown">Cooldown</option>
+                        <option value="uncategorized">Uncategorized</option>
+                    </select>
+                </td>
+                <td><a href="#spell/<%= spell.id %>">Edit</a></td>
+                <td><a href="#spell/<%= spell.id %>/delete">Delete</a></td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+    <% }) %>
+    <p>
+        <button id="update-spells-button">Update</button>
+    </p>
+
+    <p>
+        <button id="add-spell-button">Add Spell</button>
+    </p>
 </div>

@@ -4,38 +4,52 @@ Spell Controller.
 Allows the editing of player spells.
 */
 
-var SpellController = {
+var SpellController = BaseController.extend({
 
-    classes: null,
+    classes: new CharClassCollection(),
 
     index: function() {
-        if (SpellController.classes == null) {
-            SpellController.loadClasses();
-        }
-
-        var view = new ClassSelectView(SpellController.classes);
-        view.render();
+        Loader.show()
+        $.when(this.loadClasses()).then($.proxy(function() {
+            this.render("ClassSelectView", this.classes);
+            Loader.hide()
+        }, this))
     },
 
     classIndex: function(classId) {
-        if (SpellController.classes == null) {
-            SpellController.loadClasses();
-        }
+        var reqs = []
 
-        var classObj = SpellController.classes.get(classId);
-        Network.get("spells/" + classId, function(data){
-            var view = new ClassSpellSelectView(classObj, data);
-            view.render();
-        });
+        reqs.push(this.loadClasses());
+
+        var spells = null
+
+        reqs.push(Network.get("spells/" + classId, function(data){
+            spells = data
+        }))
+
+        Loader.show()
+        $.when.apply($, reqs).then($.proxy(function() {
+            this.render("ClassSpellSelectView", {
+                "classData" : this.classes.get(classId),
+                "spells" : spells
+            });
+            Loader.hide()
+        }, this))
     },
 
     editSpell: function(id, args) {
         if (id > 0) {
-            Network.get("/spell/" + id, function(data) {
-                var view = new ClassSpellEditView(data);
-                view.classData = args.classData;
-                view.render();
-            });
+            var spell = new Spell({"id" : id})
+
+            Loader.show()
+            $.when(spell.fetch()).then($.proxy(function(spell) {
+                this.render("ClassSpellEditView", {
+                    "spell" : spell,
+                    "classData" : args.classData
+                });
+
+                Loader.hide()
+            }, this))
         }
     },
 
@@ -48,20 +62,7 @@ var SpellController = {
     // Private
 
     loadClasses: function() {
-        SpellController.classes = new CharacterClassCollection([
-              {
-                  "id" : 0,
-                  "name": "Warrior"
-              },
-              {
-                  "id" : 1,
-                  "name": "Mage"
-              },
-              {
-                  "id" : 2,
-                  "name" : "Hunter"
-              }
-        ])
+        return this.classes.fetch();
     }
-};
+});
 

@@ -11,7 +11,10 @@ object SpellQuery {
 
   lazy final val selectAll =
     """
-      |SELECT * FROM spell
+      |SELECT s.*,c.name as class_name, c.id as class_id, cs.slot
+      |FROM spell s
+      |LEFT JOIN class c ON c.id=s.class_id
+      |LEFT JOIN class_spell cs ON cs.class_id=c.id
     """.stripMargin
 
   lazy final val selectAllEffects =
@@ -26,16 +29,21 @@ object SpellQuery {
 
   lazy final val selectAllForClass =
     """
-      |SELECT s.*
+      |SELECT s.*,c.name as class_name, c.id as class_id, cs.slot
       |FROM spell s
-      |INNER JOIN class_spell cs ON cs.spell_id=s.id
-      |WHERE cs.class_id={classId}
+      |LEFT JOIN class c ON c.id=s.class_id
+      |LEFT JOIN class_spell cs ON cs.class_id=c.id
+      |WHERE s.class_id={classId}
       |ORDER BY s.id
     """.stripMargin
 
   lazy final val selectById =
     """
-      |SELECT * FROM spell WHERE id={spellId} LIMIT 1
+      |SELECT s.*,c.name as class_name, c.id as class_id, cs.slot
+      |FROM spell s
+      |LEFT JOIN class c ON c.id=s.class_id
+      |LEFT JOIN class_spell cs ON cs.class_id=c.id
+      |WHERE s.id={spellId} LIMIT 1
     """.stripMargin
 
   lazy final val selectEffectsForSpell =
@@ -50,8 +58,8 @@ object SpellQuery {
 
   lazy final val insertSpell =
     """
-      |INSERT INTO spell (name, cast_time, cooldown, spell_type, cast_type, spell_radius, spell_range, shape) VALUES
-      |({name}, {cast_time}, {cooldown}, {spell_type}, {cast_type}, {radius}, {range}, {shape})
+      |INSERT INTO spell (name, cast_time, cooldown, spell_type, cast_type, spell_radius, spell_range, shape, class_id) VALUES
+      |({name}, {cast_time}, {cooldown}, {spell_type}, {cast_type}, {radius}, {range}, {shape}, {class_id})
     """.stripMargin
 
   lazy final val insertSpellEffect =
@@ -66,10 +74,16 @@ object SpellQuery {
       |({spell_id}, {trigger_spell_id}, {chance}, {trigger_type})
     """.stripMargin
 
+  lazy final val insertSpellToClass =
+    """
+      |INSERT INTO class_spell (spell_id, class_id) VALUES ({spell_id}, {class_id});
+    """.stripMargin
+
   lazy final val updateSpell =
     """
       |UPDATE spell SET name = {name}, cast_time = {cast_time}, cooldown = {cooldown}, spell_type = {spell_type},
-      |cast_type = {cast_type}, spell_radius = {radius}, spell_range = {range}, shape = {shape} WHERE id = {spell_id}
+      |cast_type = {cast_type}, spell_radius = {radius}, spell_range = {range},
+      |shape = {shape}, class_id = {class_id} WHERE id = {spell_id}
     """.stripMargin
 
   lazy final val updateSpellEffect =
@@ -97,5 +111,11 @@ object SpellQuery {
   lazy final val deleteTriggers =
     """
       |DELETE FROM spell_trigger WHERE spell_id = {spell_id}
+    """.stripMargin
+
+  lazy final val updateSpellSlot =
+    """
+      |UPDATE class_spell SET slot = {slot}
+      |WHERE spell_id = {spell_id} AND class_id = {class_id}
     """.stripMargin
 }

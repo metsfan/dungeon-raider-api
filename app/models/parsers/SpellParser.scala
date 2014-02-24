@@ -2,7 +2,7 @@ package models.parsers
 
 import anorm.SqlParser._
 import anorm.{RowParser, ~}
-import models.{SpellEffect, SpellTrigger, Spell}
+import models.{CharClass, SpellEffect, SpellTrigger, Spell}
 import play.api.libs.json.Json._
 import play.api.libs.json._
 import scala.collection.mutable
@@ -16,6 +16,7 @@ import scala.collection.mutable
  */
 trait SpellParser {
 
+  implicit val charClassWrites = writes[CharClass]
   implicit val spellTriggerWrites = writes[SpellTrigger]
   implicit val spellEffectWrites = writes[SpellEffect]
   implicit val spellWrites = writes[Spell]
@@ -29,12 +30,19 @@ trait SpellParser {
     get[Int]("cast_type") ~
     get[Double]("spell_radius") ~
     get[Double]("spell_range") ~
-    get[Int]("shape") map {
+    get[Int]("shape") ~
+    get[Boolean]("self_cast") ~
+    get[Option[Int]]("class_id") ~
+    get[Option[String]]("class_name") ~
+    get[Option[String]]("slot") map {
       case id ~ name ~ castTime ~ cooldown ~ spellType ~ castType ~
-        radius ~ range ~ shape => {
+        radius ~ range ~ shape ~ selfCast ~ classId ~ className ~ slot => {
         val filteredEffects = effects.filter(effect => effect.spell_id == id)
         val filteredTriggers = triggers.filter(trigger => trigger.spell_id == id)
-        Spell(id, name, castTime, cooldown, spellType, castType, radius, range, shape, filteredEffects, filteredTriggers)
+        val charClass = if(classId.isDefined) Some(CharClass(classId.get, className.get)) else None
+        Spell(id, name, castTime, cooldown, spellType, castType,
+          radius, range, shape, selfCast, charClass, slot,
+          filteredEffects, filteredTriggers)
       }
     }
   }
@@ -101,16 +109,29 @@ trait SpellParser {
     }
 
     val name = (data \ "name").as[String]
-    val cast_time = (data \ "cast_time").as[Int]
+    val castTime = (data \ "cast_time").as[Int]
     val cooldown = (data \ "cooldown").as[Int]
-    val spell_type = (data \ "spell_type").as[Int]
-    val cast_type = (data \ "cast_type").as[Int]
+    val spellType = (data \ "spell_type").as[Int]
+    val castType = (data \ "cast_type").as[Int]
     val radius = (data \ "radius").as[Double]
     val range = (data \ "range").as[Double]
     val shape = (data \ "shape").as[Int]
+    val selfCast = (data \ "self_cast").as[Boolean]
 
-    Spell(id, name, cast_time, cooldown, spell_type, cast_type,
-      radius, range, shape, effects.toList, triggers.toList)
+    val charClassData = (data \ "char_class").asOpt[JsValue];
+    val charClass = if (charClassData.isDefined) {
+      val classId = (charClassData.get \ "id").as[Int];
+      val className = (charClassData.get \ "name").as[String];
+
+      Some(CharClass(classId, className))
+    } else {
+      None
+    }
+    val slot = (data \ "slot").asOpt[String]
+
+    Spell(id, name, castTime, cooldown, spellType, castType,
+      radius, range, shape, selfCast, charClass, slot,
+      effects.toList, triggers.toList)
   }
 
   def jsonify(spells: List[Spell]) = {

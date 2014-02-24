@@ -3,7 +3,12 @@ package models.query
 /**
  * Created by Adam on 2/10/14.
  */
-object CharacterQuery {
+object PCharacterQuery {
+  lazy final val selectAllClasses =
+    """
+      |SELECT * FROM class
+    """.stripMargin
+
   lazy final val selectAllForUser =
     """
       |SELECT * FROM pcharacter WHERE user_id = {user_id} ORDER BY id

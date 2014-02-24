@@ -19,10 +19,14 @@ import models.parsers.SpellParser
 
 case class Spell(var id: Int, name: String, cast_time: Int, cooldown: Int,
                  spell_type: Int, cast_type: Int, radius: Double, range: Double,
-                 shape: Int, effects: Seq[SpellEffect], triggers: Seq[SpellTrigger])
+                 shape: Int, self_cast: Boolean, char_class: Option[CharClass],
+                 slot: Option[String], effects: Seq[SpellEffect], triggers: Seq[SpellTrigger])
 
 case class SpellEffect(var id: Int, var spell_id: Int, min_value: Int, max_value: Int,
                        stat_type: Int, effect_type: Int, school: Int, duration: Int)
 
 case class SpellTrigger(var id: Int, var spell_id: Int, trigger_spell_id: Int,
                         chance: Double, trigger_type: Int)
+
+case class ClassSpell(var id: Int, spell_id: Int, class_id: Int,
+                       slot: Int)

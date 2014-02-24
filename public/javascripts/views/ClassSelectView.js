@@ -6,6 +6,9 @@ var ClassSelectView = Backbone.View.extend({
     },
 
     render: function() {
-        Template.load("classes", {"classes" : this.classes}, "#content");
+        var data = { "classes" : this.classes }
+
+        Template.load("classes", data, "#content");
     }
+
 });

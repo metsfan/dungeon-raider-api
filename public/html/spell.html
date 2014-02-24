@@ -3,7 +3,11 @@
     <div id="breadcrumbs">
         <a href="#spells">Edit Class Spells</a> >>
         <a href="#spells/<%= classData.id %>"><%= classData.name %> Spells</a> >>
+        <% if (spell) { %>
+        <%= spell.name %>
+        <% } else { %>
         Create Spell
+        <% } %>
     </div>
 
     <div class="form-element-container">
@@ -32,6 +36,7 @@
                 <option value="1">Ranged</option>
                 <option value="2">Targeted AOE</option>
                 <option value="3">Caster AOE</option>
+                <option value="4">Status</option>
             </select>
         </div>
     </div>
@@ -67,6 +72,13 @@
             </select>
         </div>
     </div>
+    <div class="form-element-container">
+        <label class="form-element-label">Self-cast Only</label>
+        <div class="form-element">
+            <input type="checkbox" id="self_cast" />
+        </div>
+    </div>
+
 
     <h3>Effects:</h3>
     <div id="spell-effects"></div>

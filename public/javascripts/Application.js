@@ -1,19 +1,24 @@
 var app = null;
 
+var spellController = new SpellController()
+
 var Application = Backbone.Router.extend({
 
-    routes: {
-        "":                    "index",
+    routes: function() {
+        return {
 
-        // Spells
-        "spells" :              SpellController.index,
-        "spells/:class" :       SpellController.classIndex,
-        "spell/:id" :           SpellController.editSpell,
-        "spell" :               SpellController.createSpell,
+            "":                    "index",
+
+            // Spells
+            "spells" :              $.proxy(spellController.index, spellController),
+            "spells/:class" :       $.proxy(spellController.classIndex, spellController),
+            "spell/:id" :           $.proxy(spellController.editSpell, spellController),
+            "spell" :               $.proxy(spellController.createSpell, spellController)
+        }
     },
 
     index: function() {
-
+        Template.load("home", {}, "#content")
     },
 
     navigate: function(fragment, options) {
@@ -54,20 +59,6 @@ var Application = Backbone.Router.extend({
 
 
 });
-
-var Template = {
-    load: function(template, data, selector, append) {
-        var baseUrl = "/assets/html/";
-        $.when($.get(baseUrl + template + ".html")).done(function(tmplData) {
-            var html = _.template(tmplData, data);
-            if (append) {
-                $(selector).html($(selector).html() + html);
-            } else {
-                $(selector).html(html);
-            }
-        });
-    }
-}
 
 $(document).ready(function() {
     app = new Application();

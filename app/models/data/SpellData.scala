@@ -8,6 +8,7 @@ import anorm.ParameterValue
 import java.sql.Connection
 import models._
 import models.parsers.SpellParser
+import play.api.libs.json.{JsArray, JsValue}
 
 /**
  * Created by Adam on 2/10/14.
@@ -54,7 +55,9 @@ class SpellData extends SpellParser {
           "cast_type" -> model.cast_type,
           "radius" -> model.radius,
           "range" -> model.range,
-          "shape" -> model.shape
+          "shape" -> model.shape,
+          "self_cast" -> model.self_cast,
+          "class_id" -> (if(model.char_class.isDefined) model.char_class.get.id else 0)
         )
 
         if (model.id > 0) {
@@ -114,6 +117,43 @@ class SpellData extends SpellParser {
       }
     }
 
+  }
+
+  def saveForClass(spell: Spell, classData: JsValue) {
+    DB.withConnection { implicit conn =>
+      val class_id = (classData \ "id").as[Int]
+
+      val fields: Seq[(Any, ParameterValue[_])] = Seq(
+        "spell_id" -> spell.id,
+        "class_id" -> class_id
+      )
+
+      SQL(SpellQuery.insertSpellToClass).on(fields: _*).execute()
+    }
+  }
+
+  def saveSlots(classId: String, data: JsValue) {
+    DB.withConnection { implicit conn =>
+      val spells = data.as[List[JsValue]]
+
+      spells.foreach { spell =>
+        val spellId = (spell \ "spell_id").as[Int]
+        val slot = (spell \ "slot").as[String]
+
+        SQL(SpellQuery.updateSpellSlot).on(
+          "spell_id" -> spellId,
+          "class_id" -> classId.toInt,
+          "slot" -> slot
+        ).executeUpdate
+      }
+
+      /*val updateSql = SQL(SpellQuery.updateSpellSlot)
+      val updateStmt = (updateSql.asBatch /: params) (
+        (sql, elem) => sql.addBatchParams(elem)
+      )
+
+      updateStmt.execute*/
+    }
   }
 
   def delete(id: String): Int = {

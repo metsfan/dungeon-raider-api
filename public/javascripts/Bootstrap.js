@@ -1,10 +1,13 @@
 var classes = [
+
     // Util
     "util/Loader.js",
     "util/Util.js",
+    "util/Network.js",
+    "util/Template.js",
 
     // Models
-    "models/CharacterClass.js",
+    "models/CharClass.js",
     "models/Spell.js",
 
     // Views
@@ -17,7 +20,6 @@ var classes = [
     "controllers/SpellController.js",
 
     //Core
-    "Network.js",
     "Application.js",
 ];
 
@@ -29,5 +31,6 @@ for (var i = 0; i < classes.length; i++) {
     var scriptElement = document.createElement("script");
     scriptElement.setAttribute("type", "text/javascript");
     scriptElement.setAttribute("src", baseURL + classes[i]);
+    scriptElement.setAttribute("async", false);
     head.appendChild(scriptElement);
 }

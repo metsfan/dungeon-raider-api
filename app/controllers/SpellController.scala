@@ -4,6 +4,7 @@ import play.api.libs.json.Json._
 import models.parsers.SpellParser
 import models.data.SpellData
 import play.api.mvc.Action
+import play.api.libs.json.JsValue
 
 object SpellController extends BaseController with SpellParser {
   val spellData = new SpellData()
@@ -33,6 +34,10 @@ object SpellController extends BaseController with SpellParser {
         try {
           val saved = spellData.save(spellFormParser(body, id.toInt))
           if (saved.isDefined) {
+            val classData = (body \ "class").asOpt[JsValue]
+            if (classData.isDefined) {
+              spellData.saveForClass(saved.get, classData.get)
+            }
             result = toJson(saved).toString
             success = true
           }
@@ -61,6 +66,15 @@ object SpellController extends BaseController with SpellParser {
 
       Ok(result).as("application/json")
     }
+  }
+
+  def saveSlots(classId: String) = Action { implicit request =>
+    val body = parseRequestJSON(request)
+
+    if (body != null) {
+      spellData.saveSlots(classId, body)
+    }
+    Ok("")
   }
 
   def delete(id: String) = Action {

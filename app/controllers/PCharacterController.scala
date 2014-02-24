@@ -18,4 +18,8 @@ object PCharacterController extends BaseController with PCharacterParser {
   def get(id: String) = Action {
     Ok(jsonify(characterData.get(id))).as("application/json")
   }
+
+  def classList = Action {
+    Ok(jsonifyClasses(characterData.allClasses)).as("application/json")
+  }
 }

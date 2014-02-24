@@ -2,7 +2,7 @@ package models.parsers
 
 import anorm._
 import anorm.SqlParser._
-import models.PCharacter
+import models.{CharClass, PCharacter}
 import play.api.libs.json.Json._
 import play.api.libs.json._
 import scala.collection.mutable
@@ -11,6 +11,7 @@ import scala.collection.mutable
  * Created by Adam on 2/10/14.
  */
 trait PCharacterParser {
+  implicit val charClassWrites = writes[CharClass]
   implicit val characterWrites = writes[PCharacter]
 
   def charRowParser: RowParser[PCharacter] = {
@@ -25,6 +26,15 @@ trait PCharacterParser {
     get[Int]("user_id") map {
       case id ~ name ~ classId ~ model ~ health ~ race ~ level ~ experience ~ userId => {
         PCharacter(id, userId, name, classId, model, health, race, level, experience)
+      }
+    }
+  }
+
+  def classRowParser: RowParser[CharClass] = {
+    get[Int]("id") ~
+    get[String]("name") map {
+      case id ~ name => {
+        CharClass(id, name)
       }
     }
   }
@@ -50,5 +60,9 @@ trait PCharacterParser {
 
   def jsonify(character: Option[PCharacter]) = {
     toJson(character)
+  }
+
+  def jsonifyClasses(classes: List[CharClass]) = {
+    toJson(classes)
   }
 }

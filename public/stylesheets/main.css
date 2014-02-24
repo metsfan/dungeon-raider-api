@@ -13,6 +13,7 @@
 #content {
     float: left;
     margin-left: 20px;
+    width: 800px;
 }
 
 .form-element-label {
@@ -23,4 +24,28 @@
 
 #spell-edit-form-container {
     width: 700px;
+}
+
+.spells-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.spells-table th {
+    text-align: left;
+}
+
+.spells-table .name-cell {
+    width: 50%;
+}
+
+.spells-table tr {
+    border-bottom: 1px solid black;
+    height: 50px;
+}
+
+.spell-table-header {
+    font-weight: bold;
+    font-size: 18px;
 }

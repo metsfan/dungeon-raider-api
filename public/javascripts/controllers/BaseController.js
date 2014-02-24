@@ -1,10 +1,7 @@
-var BaseController = {
+var BaseController = Backbone.Model.extend({
     render: function(view, data) {
-        var view = new view();
-        view.render(data);
-    },
-
-    extend: function(options) {
-        return _.extend(options, this);
+        var args = Array.prototype.slice.call(arguments, 1)
+        var view = eval("new " + view + "(data)")
+        view.render();
     }
-}
+})
