@@ -24,7 +24,7 @@ var SpellController = BaseController.extend({
         var spells = null
 
         reqs.push(Network.get("spells/" + classId, function(data){
-            spells = data
+            spells = new SpellCollection(data)
         }))
 
         Loader.show()
@@ -54,8 +54,10 @@ var SpellController = BaseController.extend({
     },
 
     createSpell: function(args) {
-        var view = new ClassSpellEditView({});
-        view.classData = args.classData;
+        var view = new ClassSpellEditView({
+            "spell" : new Spell({id : 0}),
+            "classData" : args.classData
+        });
         view.render();
     },
 

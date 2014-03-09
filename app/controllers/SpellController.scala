@@ -34,9 +34,10 @@ object SpellController extends BaseController with SpellParser {
         try {
           val saved = spellData.save(spellFormParser(body, id.toInt))
           if (saved.isDefined) {
-            val classData = (body \ "class").asOpt[JsValue]
+            val classData = (body \ "char_class").asOpt[JsValue]
             if (classData.isDefined) {
-              spellData.saveForClass(saved.get, classData.get)
+              val isNew = id.toInt == 0
+              spellData.saveForClass(saved.get, classData.get, isNew)
             }
             result = toJson(saved).toString
             success = true

@@ -8,9 +8,10 @@
 
     <% _.each(spells, function(spells) { %>
     <div class="spell-table-header"><%= spells.title %> Spells</div>
-    <table class="spells-table" id="spells-table-<%= spells.name %>">
+    <table class="spells-table" id="spells-table-<%= spells.name %>" type="<%= spells.type %>">
         <thead>
             <tr>
+                <th class="icon-cell">Icon</th>
                 <th class="name-cell">Name</th>
                 <th class="type-cell">Type</th>
                 <th class="edit-cell">Edit</th>
@@ -19,8 +20,9 @@
         </thead>
         <tbody>
             <% _.each(spells.list, function(spell) { %>
-            <tr data-spell-id="<%= spell.id %>" id="spell-row-<%= spell.id %>" data-slot="<%= spell.slot ? spell.slot : '' %>">
-                <td><%= spell.name %></td>
+            <tr class="spell-row" data-spell-id="<%= spell.id %>" id="spell-row-<%= spell.id %>" data-slot="<%= spell.attributes.slot ? spell.attributes.slot : '' %>">
+                <td><img src="<%= spell.attributes.icon_url %>" /></td>
+                <td><%= spell.attributes.name %></td>
                 <td>
                     <select class="spell-category">
                         <option value="core">Core</option>
@@ -29,7 +31,7 @@
                     </select>
                 </td>
                 <td><a href="#spell/<%= spell.id %>">Edit</a></td>
-                <td><a href="#spell/<%= spell.id %>/delete">Delete</a></td>
+                <td><a href="javascript:void(0)" class="spell-delete" data-spell-id="<%= spell.id %>">Delete</a></td>
             </tr>
             <% }) %>
         </tbody>

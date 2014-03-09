@@ -22,6 +22,15 @@
     font-weight: bold;
 }
 
+.form-element {
+    float: left;
+    width: 500px;
+}
+
+.form-element-container {
+    width: 700px;
+}
+
 #spell-edit-form-container {
     width: 700px;
 }

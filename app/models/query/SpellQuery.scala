@@ -32,7 +32,7 @@ object SpellQuery {
       |SELECT s.*,c.name as class_name, c.id as class_id, cs.slot
       |FROM spell s
       |LEFT JOIN class c ON c.id=s.class_id
-      |LEFT JOIN class_spell cs ON cs.class_id=c.id
+      |LEFT JOIN class_spell cs ON cs.class_id=c.id AND cs.spell_id=s.id
       |WHERE s.class_id={classId}
       |ORDER BY s.id
     """.stripMargin
@@ -48,7 +48,7 @@ object SpellQuery {
 
   lazy final val selectEffectsForSpell =
     """
-      |SELECT * FROM spell_effect WHERE spell_id={spellId}
+      |SELECT * FROM spell_effect WHERE spell_id={spellId} ORDER BY delta
     """.stripMargin
 
   lazy final val selectTriggersForSpell =
@@ -58,14 +58,19 @@ object SpellQuery {
 
   lazy final val insertSpell =
     """
-      |INSERT INTO spell (name, cast_time, cooldown, spell_type, cast_type, spell_radius, spell_range, shape, class_id) VALUES
-      |({name}, {cast_time}, {cooldown}, {spell_type}, {cast_type}, {radius}, {range}, {shape}, {class_id})
+      |INSERT INTO spell (name, cast_time, cooldown, spell_type, cast_type, spell_radius, spell_range, shape, class_id, self_cast, icon_url) VALUES
+      |({name}, {cast_time}, {cooldown}, {spell_type}, {cast_type}, {radius}, {range}, {shape}, {class_id}, {self_cast}, {icon_url})
     """.stripMargin
 
   lazy final val insertSpellEffect =
     """
-      |INSERT INTO spell_effect (spell_id, min_value, max_value, stat_type, effect_type, school) VALUES
-      |({spell_id}, {min_value}, {max_value}, {stat_type}, {effect_type}, {school})
+      |INSERT INTO spell_effect (spell_id, effect_type, damage_source, buff_source,
+      |percent_source_min, percent_source_max, flat_amount_min, flat_amount_max,
+      |dot_tick, dot_duration, buff_duration, mechanic, school, script_name, script_arguments) VALUES
+      |({spell_id}, {effect_type}, {damage_source}, {buff_source},
+      |{percent_source_min}, {percent_source_max}, {flat_amount_min}, {flat_amount_max},
+      |{dot_tick}, {dot_duration}, {buff_duration}, {mechanic}, {school},
+      |{script_name}, {script_arguments})
     """.stripMargin
 
   lazy final val insertSpellTrigger =
@@ -74,28 +79,38 @@ object SpellQuery {
       |({spell_id}, {trigger_spell_id}, {chance}, {trigger_type})
     """.stripMargin
 
-  lazy final val insertSpellToClass =
+  lazy final val insertSpellClass =
     """
-      |INSERT INTO class_spell (spell_id, class_id) VALUES ({spell_id}, {class_id});
+      |INSERT INTO class_spell (class_id, spell_id) VALUES ({class_id}, {spell_id});
     """.stripMargin
 
   lazy final val updateSpell =
     """
       |UPDATE spell SET name = {name}, cast_time = {cast_time}, cooldown = {cooldown}, spell_type = {spell_type},
       |cast_type = {cast_type}, spell_radius = {radius}, spell_range = {range},
-      |shape = {shape}, class_id = {class_id} WHERE id = {spell_id}
+      |shape = {shape}, class_id = {class_id}, self_cast = {self_cast}, icon_url = {icon_url} WHERE id = {spell_id}
     """.stripMargin
 
   lazy final val updateSpellEffect =
     """
-      |UPDATE spell_effect SET spell_id = {spell_id}, min_value = {min_value}, max_value = {max_value},
-      |stat_type = {stat_type}, effect_type = {effect_type}, school = {school} WHERE id = {effect_id}
+      |UPDATE spell_effect SET spell_id = {spell_id}, effect_type = {effect_type},
+      |damage_source = {damage_source}, buff_source = {buff_source},
+      |percent_source_min = {percent_source_min}, percent_source_max = {percent_source_max},
+      |flat_amount_min = {flat_amount_min}, flat_amount_max = {flat_amount_max},
+      |dot_tick = {dot_tick}, dot_duration = {dot_duration}, buff_duration = {buff_duration},
+      |mechanic = {mechanic}, school = {school}, script_name = {script_name},
+      |script_arguments = {script_arguments} WHERE id = {effect_id}
     """.stripMargin
 
   lazy final val updateSpellTrigger =
     """
       |UPDATE spell_trigger SET spell_id = {spell_id}, trigger_spell_id = {trigger_spell_id},
       |chance = {chance}, trigger_type = {trigger_type} WHERE id = {trigger_id}
+    """.stripMargin
+
+  lazy final val updateSpellClass =
+    """
+      |UPDATE class_spell SET icon_url = {icon_url} WHERE class_id = {class_id} AND {spell_id} = {spell_id}
     """.stripMargin
 
   lazy final val deleteSpell =

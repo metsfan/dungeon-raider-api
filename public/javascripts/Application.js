@@ -22,11 +22,13 @@ var Application = Backbone.Router.extend({
     },
 
     navigate: function(fragment, options) {
-        if (options.args) {
-            $.cookie("postData", JSON.stringify(options.args));
-            $.cookie("postUrl", fragment);
-        } else {
-            $.removeCookie("postData");
+        if (options) {
+            if (options.args) {
+                $.cookie("postData", JSON.stringify(options.args));
+                $.cookie("postUrl", fragment);
+            } else {
+                $.removeCookie("postData");
+            }
         }
 
         Backbone.Router.prototype.navigate.apply(this, arguments);

@@ -24,6 +24,10 @@ DELETE        /npcharacter/:id              controllers.NPCharacterController.de
 GET           /pcharacters/:user_id         controllers.PCharacterController.list(user_id)
 GET           /pcharacter/:id               controllers.PCharacterController.get(id)
 
+# Uploading
+
+POST          /upload/image                 controllers.UploadController.imageUpload
+
 GET           /                             controllers.Assets.at(path="/public/html", file="index.html")
 
 # Map static resources from the /public folder to the /assets URL path

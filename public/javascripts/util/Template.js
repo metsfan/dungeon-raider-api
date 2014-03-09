@@ -5,13 +5,22 @@ var Template = {
         }
 
         var baseUrl = "/assets/html/";
-        $.when($.get(baseUrl + template + ".html")).done(function(tmplData) {
+        return $.when($.get(baseUrl + template + ".html")).done(function(tmplData) {
             var html = _.template(tmplData, data);
             var elem = $(selector)
+
+            var copies = options.copies ? options.copies : 1
+
+
             if (options.append) {
-                elem.html(elem.html() + html);
+                for (var i = 0; i < copies; i++) {
+                    elem.append(html);
+                }
             } else {
                 elem.html(html);
+                for (var i = 1; i < copies; i++) {
+                    elem.append(html);
+                }
             }
 
             if (options.callback) {

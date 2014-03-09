@@ -57,7 +57,8 @@ class SpellData extends SpellParser {
           "range" -> model.range,
           "shape" -> model.shape,
           "self_cast" -> model.self_cast,
-          "class_id" -> (if(model.char_class.isDefined) model.char_class.get.id else 0)
+          "class_id" -> (if(model.char_class.isDefined) model.char_class.get.id else 0),
+          "icon_url" -> model.icon_url
         )
 
         if (model.id > 0) {
@@ -76,11 +77,20 @@ class SpellData extends SpellParser {
 
           var effectFields: Seq[(Any, ParameterValue[_])] = Seq(
             "spell_id" -> effect.spell_id,
-            "min_value" -> effect.min_value,
-            "max_value" -> effect.max_value,
-            "stat_type" -> effect.stat_type,
             "effect_type" -> effect.effect_type,
-            "school" -> effect.school
+            "damage_source" -> effect.damage_source,
+            "buff_source" -> effect.buff_source,
+            "percent_source_min" -> effect.percent_source_min,
+            "percent_source_max" -> effect.percent_source_max,
+            "flat_amount_min" -> effect.flat_amount_min,
+            "flat_amount_max" -> effect.flat_amount_max,
+            "dot_tick" -> effect.dot_tick,
+            "dot_duration" -> effect.dot_duration,
+            "buff_duration" -> effect.buff_duration,
+            "mechanic" -> effect.mechanic,
+            "school" -> effect.school,
+            "script_name" -> effect.script_name,
+            "script_arguments" -> effect.script_arguments
           )
           if (effect.id > 0) {
             effectFields ++= Seq[(Any, ParameterValue[_])]("effect_id" -> effect.id)
@@ -119,7 +129,7 @@ class SpellData extends SpellParser {
 
   }
 
-  def saveForClass(spell: Spell, classData: JsValue) {
+  def saveForClass(spell: Spell, classData: JsValue, isNew: Boolean) {
     DB.withConnection { implicit conn =>
       val class_id = (classData \ "id").as[Int]
 
@@ -128,7 +138,11 @@ class SpellData extends SpellParser {
         "class_id" -> class_id
       )
 
-      SQL(SpellQuery.insertSpellToClass).on(fields: _*).execute()
+      if (isNew) {
+        SQL(SpellQuery.insertSpellClass).on(fields: _*).execute()
+      } else {
+        //SQL(SpellQuery.updateSpellClass).on(fields: _*).execute()
+      }
     }
   }
 

@@ -12,20 +12,26 @@ var ClassSpellSelectView = Backbone.View.extend({
     },
 
     render: function() {
-        var coreSpells = _.filter(this.spells, function(spell) {
-            return spell.slot && spell.slot.search("s") >= 0
-        }).sort(function(spell) {
-            return parseInt(spell.slot.replace("s+", ""))
+        var coreSpells = this.spells.filter(function(spell) {
+            return spell.attributes.slot &&
+            spell.attributes.slot.search("s") >= 0
         })
 
-        var cooldownSpells = _.filter(this.spells, function(spell) {
-            return spell.slot && spell.slot.search("c") >= 0
-        }).sort(function(spell) {
-            return parseInt(spell.slot.replace("c+", ""))
+        coreSpells = _.sortBy(coreSpells, function(spell) {
+            return parseInt(spell.attributes.slot.replace("s", ""));
         })
 
-        var uncategorizedSpells = _.filter(this.spells, function(spell) {
-            return !spell.slot
+        var cooldownSpells = this.spells.filter(function(spell) {
+            return spell.attributes.slot &&
+            spell.attributes.slot.search("cd") >= 0
+        })
+
+        cooldownSpells = _.sortBy(cooldownSpells, function(spell) {
+            return parseInt(spell.attributes.slot.replace("cd", ""))
+        })
+
+        var uncategorizedSpells = this.spells.filter(function(spell) {
+            return !spell.attributes.slot
         })
 
         var data = {
@@ -34,17 +40,20 @@ var ClassSpellSelectView = Backbone.View.extend({
                 {
                     "list" : coreSpells,
                     "name" : "core",
-                    "title" : "Core"
+                    "title" : "Core",
+                    "type" : "s"
                 },
                 {
                     "list" : cooldownSpells,
                     "name" : "cooldown",
-                    "title" : "Cooldown"
+                    "title" : "Cooldown",
+                    "type" : "cd"
                 },
                 {
                     "list" : uncategorizedSpells,
                     "name" : "uncategorized",
-                    "title" : "Uncategorized"
+                    "title" : "Uncategorized",
+                    "type" : ""
                 },
             ]
         }
@@ -54,13 +63,15 @@ var ClassSpellSelectView = Backbone.View.extend({
                     $("#spells-table-" + spells.name + " .spell-category").val(spells.name)
                 })
 
+                this.refreshTableDnD();
+
                 $(".spell-category").change($.proxy(function(e) {
                     var elem = $(e.target)
                     var value = elem.val()
                     var parentRow = elem.parents("tr")
                     var spellId = parseInt(parentRow.attr("data-spell-id"))
 
-                    var curSpell = _.find(this.spells, function(spell) {
+                    var curSpell = this.spells.find(function(spell) {
                         return spell.id == spellId
                     })
 
@@ -69,9 +80,9 @@ var ClassSpellSelectView = Backbone.View.extend({
                         var index = $("#spells-table-" + value + " tbody tr").length
 
                         if (value == "core") {
-                            slot = "s+" + index
+                            slot = "s" + index
                         } else if (value == "cooldown") {
-                            slot = "c+" + index
+                            slot = "cd" + index
                         }
 
                         curSpell.slot = slot
@@ -79,10 +90,12 @@ var ClassSpellSelectView = Backbone.View.extend({
 
                         $("#spells-table-" + value).append(parentRow)
                     }
+
+                    this.refreshTableDnD();
                 }, this))
 
                 $("#update-spells-button").click($.proxy(function() {
-                    var data = _.map(this.spells, function(spell) {
+                    var data = this.spells.map(function(spell) {
                         var slot = $("#spell-row-" + spell.id).attr("data-slot")
                         return {
                             "spell_id" : spell.id,
@@ -100,6 +113,21 @@ var ClassSpellSelectView = Backbone.View.extend({
                         }
                     })
                 }, this))
+
+                $(".spell-delete").click($.proxy(function(e) {
+                    var el = $(e.target)
+                    var spellId = $(e.target).attr("data-spell-id")
+                    var spell = this.spells.get(spellId)
+
+                    var shouldDelete = confirm("Are you sure you want to delete " + spell.attributes.name + "?")
+                    if (shouldDelete) {
+                        spell.destroy();
+                        this.spells.remove(spell);
+
+                        var parentRow = el.parents("tr");
+                        parentRow.remove();
+                    }
+                }, this));
             }, this)
         });
 
@@ -114,5 +142,18 @@ var ClassSpellSelectView = Backbone.View.extend({
             }
         }
         app.navigate("spell", options);
+    },
+
+    refreshTableDnD: function() {
+        $(".spells-table[type!='']").tableDnD({
+            onDrop: function(table, row) {
+                var tableEl = $(table);
+                var type = tableEl.attr("type");
+
+                tableEl.find(".spell-row").each(function(i, elem) {
+                    $(elem).attr("data-slot", type + i);
+                });
+            }
+        });
     }
 });

@@ -1,54 +1,121 @@
 <div class="spell-effect-container" id="spell-effect-container-<%= index %>">
-    <input type="hidden" id="effect.id-<%= index %>" value="0" />
-    <div class="form-element-container">
-        <label class="form-element-label">Min Value</label>
-        <div class="form-element">
-            <input type="text" id="effect.min_value-<%= index %>" value="" />
-        </div>
-    </div>
-    <div class="form-element-container">
-        <label class="form-element-label">Max Value</label>
-        <div class="form-element">
-            <input type="text" id="effect.max_value-<%= index %>" value="" />
-        </div>
-    </div>
-    <div class="form-element-container">
-        <label class="form-element-label">Duration</label>
-        <div class="form-element">
-            <input type="text" id="effect.duration-<%= index %>" value="" />
-        </div>
-    </div>
-    <div class="form-element-container">
-        <label class="form-element-label">Stat Type</label>
-        <div class="form-element">
-            <select id="effect.stat-<%= index %>">
-                <option value="-1">N/A</option>
-                <option value="0">Health</option>
-                <option value="1">Power</option>
-                <option value="2">Energy</option>
-            </select>
-        </div>
-    </div>
-    <div class="form-element-container">
+    <h4>Effect <%= index + 1 %></h4>
+    <input type="hidden" id="effect-id-<%= index %>" value="0" />
+    <div class="form-element-container effect_type-container">
         <label class="form-element-label">Effect Type</label>
         <div class="form-element">
-            <select id="effect.effect-<%= index %>">
-                <option value="0">Instant</option>
-                <option value="1">Over Time</option>
+            <select id="effect-effect_type-<%= index %>" class="effect_type">
+                <option value="0">Damage</option>
+                <option value="1">Healing</option>
+                <option value="2">Damage Over Time</option>
+                <option value="3">Healing Over Time</option>
+                <option value="4">Buff</option>
+                <option value="5">Debuff</option>
+                <option value="6">Mechanic</option>
+                <option value="7">Script</option>
             </select>
         </div>
     </div>
-    <div class="form-element-container">
+    <div class="form-element-container dot_duration-container">
+        <label class="form-element-label">Duration</label>
+        <div class="form-element">
+            Tick every <input id="effect-dot_tick-<%= index %>" size="2" />
+            second for <input id="effect-dot_duration-<%= index %>" size="2"  /> seconds
+        </div>
+    </div>
+    <div class="form-element-container duration-container">
+        <label class="form-element-label">Duration</label>
+        <div class="form-element">
+            <input type="text" id="effect-buff_duration-<%= index %>" value="" size="2" /> seconds
+        </div>
+    </div>
+    <div class="form-element-container damage_source-container">
+        <label class="form-element-label">Damage/Healing Source</label>
+        <div class="form-element">
+            <select id="effect-damage_source-<%= index %>">
+                <option value="0">Caster's Power</option>
+                <option value="1">Target's Health</option>
+                <option value="2">Current Spell's Damage</option>
+                <option value="3">Triggering Spell's Damage</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-element-container buff_source-container">
+        <label class="form-element-label">Buff/Debuff Source</label>
+        <div class="form-element">
+            <select id="effect-buff_source-<%= index %>">
+                <option value="0">Power</option>
+                <option value="1">Health</option>
+                <option value="2">Energy</option>
+                <option value="3">Energy Generation</option>
+                <option value="4">Dodge</option>
+                <option value="5">Parry</option>
+                <option value="6">Block</option>
+                <option value="7">Damage Done</option>
+                <option value="8">Miss</option>
+                <option value="9">Movement Speed</option>
+                <option value="10">Cast Speed</option>
+                <option value="11">Damage Taken</option>
+                <option value="12">Model Size</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-element-container mechanic-container">
+        <label class="form-element-label">Mechanic</label>
+        <div class="form-element">
+            <select id="effect-mechanic-<%= index %>">
+                <option value="">Interrupt</option>
+                <option value="">Stun</option>
+                <option value="">Knock back</option>
+                <option value="">Silence</option>
+                <option value="">Knock up</option>
+                <option value="">Polymorph</option>
+                <option value="">Charm</option>
+                <option value="">Fear</option>
+                <option value="">Immobilize</option>
+                <option value="">Resurrection</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-element-container percent_source-container">
+        <label class="form-element-label">Percent of Source</label>
+        <div class="form-element">
+            <input type="text" id="effect-percent_source_min-<%= index %>" size="2" placeholder="Min" />
+            to
+            <input type="text" id="effect-percent_source_max-<%= index %>" size="2" placeholder="Max" />
+        </div>
+    </div>
+    <div class="form-element-container flat_amount-container">
+        <label class="form-element-label">Additional Flat Amount</label>
+        <div class="form-element">
+            <input type="text" id="effect-flat_amount_min-<%= index %>" size="2" placeholder="Min" />
+            to
+            <input type="text" id="effect-flat_amount_max-<%= index %>" size="2" placeholder="Max" />
+        </div>
+    </div>
+
+    <div class="form-element-container school-container">
         <label class="form-element-label">School</label>
         <div class="form-element">
-            <select id="effect.school-<%= index %>">
-                <option value="-1">N/A</option>
+            <select id="effect-school-<%= index %>">
                 <option value="0">Physical</option>
                 <option value="1">Magical</option>
-                <option value="2">Healing</option>
-                <option value="3">Buff</option>
-                <option value="4">Debuff</option>
             </select>
+        </div>
+    </div>
+
+    <div class="form-element-container script_name-container">
+        <label class="form-element-label">Script Name</label>
+        <div class="form-element">
+            <input type="text" id="effect-script_name-<%= index %>" value="" />
+        </div>
+    </div>
+    <div class="form-element-container script_arguments-container">
+        <label class="form-element-label">Script Arguments</label>
+        <div class="form-element">
+            <input type="text" id="effect-script_arguments-<%= index %>" value="" />
         </div>
     </div>
 </div>
