@@ -72,6 +72,14 @@ var ClassSpellEditView = Backbone.View.extend({
                         this._loadEffects(this.spell.effects)
                     }
 
+                    $("#spell-effects").sortable({
+                        "stop" : function() {
+                            $(this).children().each(function(i, elem) {
+                                $(this).find(".spell-index").html(i+1)
+                            })
+                        }
+                    })
+
                     if (this.spell.triggers && this.spell.triggers.length > 0) {
                         this._loadTriggers(this.spell.triggers)
                     }
@@ -111,23 +119,25 @@ var ClassSpellEditView = Backbone.View.extend({
                     };
 
                     $(".spell-effect-container").each(function(i, elem) {
+                        var index = parseInt($(elem).attr("data-index"))
                         spell.effects.push({
-                            "id" : parseInt($("#effect-id-" + i).val()),
+                            "id" : parseInt($("#effect-id-" + index).val()),
                             "spell_id" : parseInt(spell.id),
-                            "effect_type" : parseInt($("#effect-effect_type-" + i).val()),
-                            "damage_source" : parseInt($("#effect-damage_source-" + i).val()),
-                            "buff_source" : parseInt($("#effect-buff_source-" + i).val()),
-                            "percent_source_min" : parseInt($("#effect-percent_source_min-" + i).val()),
-                            "percent_source_max" : parseInt($("#effect-percent_source_max-" + i).val()),
-                            "flat_amount_min" : parseInt($("#effect-flat_amount_min-" + i).val()),
-                            "flat_amount_max" : parseInt($("#effect-flat_amount_max-" + i).val()),
-                            "dot_tick" : parseInt($("#effect-dot_tick-" + i).val()),
-                            "dot_duration" : parseInt($("#effect-dot_duration-" + i).val()),
-                            "buff_duration" : parseInt($("#effect-buff_duration-" + i).val()),
-                            "mechanic" : parseInt($("#effect-mechanic-" + i).val()),
-                            "school" : parseInt($("#effect-school-" + i).val()),
-                            "script_name" : $("#effect-script_name-" + i).val(),
-                            "script_arguments" : $("#effect-script_arguments-" + i).val()
+                            "effect_type" : parseInt($("#effect-effect_type-" + index).val()),
+                            "damage_source" : parseInt($("#effect-damage_source-" + index).val()),
+                            "buff_source" : parseInt($("#effect-buff_source-" + index).val()),
+                            "percent_source_min" : parseInt($("#effect-percent_source_min-" + index).val()),
+                            "percent_source_max" : parseInt($("#effect-percent_source_max-" + index).val()),
+                            "flat_amount_min" : parseInt($("#effect-flat_amount_min-" + index).val()),
+                            "flat_amount_max" : parseInt($("#effect-flat_amount_max-" + index).val()),
+                            "dot_tick" : parseInt($("#effect-dot_tick-" + index).val()),
+                            "dot_duration" : parseInt($("#effect-dot_duration-" + index).val()),
+                            "buff_duration" : parseInt($("#effect-buff_duration-" + index).val()),
+                            "mechanic" : parseInt($("#effect-mechanic-" + index).val()),
+                            "school" : parseInt($("#effect-school-" + index).val()),
+                            "script_name" : $("#effect-script_name-" + index).val(),
+                            "script_arguments" : $("#effect-script_arguments-" + index).val(),
+                            "delta" : parseInt(i)
                         });
                     });
 

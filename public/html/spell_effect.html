@@ -1,5 +1,5 @@
-<div class="spell-effect-container" id="spell-effect-container-<%= index %>">
-    <h4>Effect <%= index + 1 %></h4>
+<li class="spell-effect-container" id="spell-effect-container-<%= index %>" data-index="<%= index %>">
+    <h4>Effect #<span class="spell-index"><%= index+1 %></span></h4>
     <input type="hidden" id="effect-id-<%= index %>" value="0" />
     <div class="form-element-container effect_type-container">
         <label class="form-element-label">Effect Type</label>
@@ -118,4 +118,4 @@
             <input type="text" id="effect-script_arguments-<%= index %>" value="" />
         </div>
     </div>
-</div>
+</li>

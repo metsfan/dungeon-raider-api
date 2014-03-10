@@ -66,11 +66,13 @@ object SpellQuery {
     """
       |INSERT INTO spell_effect (spell_id, effect_type, damage_source, buff_source,
       |percent_source_min, percent_source_max, flat_amount_min, flat_amount_max,
-      |dot_tick, dot_duration, buff_duration, mechanic, school, script_name, script_arguments) VALUES
+      |dot_tick, dot_duration, buff_duration, mechanic, school, script_name,
+      |script_arguments, delta)
+      |VALUES
       |({spell_id}, {effect_type}, {damage_source}, {buff_source},
       |{percent_source_min}, {percent_source_max}, {flat_amount_min}, {flat_amount_max},
       |{dot_tick}, {dot_duration}, {buff_duration}, {mechanic}, {school},
-      |{script_name}, {script_arguments})
+      |{script_name}, {script_arguments}, {delta})
     """.stripMargin
 
   lazy final val insertSpellTrigger =
@@ -99,7 +101,7 @@ object SpellQuery {
       |flat_amount_min = {flat_amount_min}, flat_amount_max = {flat_amount_max},
       |dot_tick = {dot_tick}, dot_duration = {dot_duration}, buff_duration = {buff_duration},
       |mechanic = {mechanic}, school = {school}, script_name = {script_name},
-      |script_arguments = {script_arguments} WHERE id = {effect_id}
+      |script_arguments = {script_arguments}, delta = {delta} WHERE id = {effect_id}
     """.stripMargin
 
   lazy final val updateSpellTrigger =

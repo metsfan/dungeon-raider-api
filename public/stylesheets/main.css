@@ -58,3 +58,13 @@
     font-weight: bold;
     font-size: 18px;
 }
+
+.spell-effect-container {
+    float: left;
+    list-style-type: none;
+    margin: 10px 0;
+    border: 1px solid gray;
+}
+#spell-effects {
+    padding-left: 0;
+}

@@ -90,7 +90,8 @@ class SpellData extends SpellParser {
             "mechanic" -> effect.mechanic,
             "school" -> effect.school,
             "script_name" -> effect.script_name,
-            "script_arguments" -> effect.script_arguments
+            "script_arguments" -> effect.script_arguments,
+            "delta" -> effect.delta
           )
           if (effect.id > 0) {
             effectFields ++= Seq[(Any, ParameterValue[_])]("effect_id" -> effect.id)

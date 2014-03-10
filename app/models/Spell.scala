@@ -27,7 +27,8 @@ case class SpellEffect(var id: Int, var spell_id: Int, effect_type: Int,
                         damage_source: Int, buff_source: Int, percent_source_min: Int,
                         percent_source_max: Int, flat_amount_min: Int, flat_amount_max: Int,
                         dot_tick: Int, dot_duration: Int, buff_duration: Int, mechanic: Int,
-                        school: Int,  script_name: Option[String], script_arguments: Option[String])
+                        school: Int,  script_name: Option[String], script_arguments: Option[String],
+                        delta: Int)
 
 case class SpellTrigger(var id: Int, var spell_id: Int, trigger_spell_id: Int,
                         chance: Double, trigger_type: Int)
