@@ -2,7 +2,7 @@ package controllers
 
 import play.api.mvc._
 import models.parsers.NPCharacterParser
-import models.data.NPCharacterData
+import models.data.{SpellData, NPCharacterData}
 import play.api.libs.json.Json._
 import java.util.NoSuchElementException
 
@@ -14,7 +14,8 @@ import java.util.NoSuchElementException
  * To change this template use File | Settings | File Templates.
  */
 object NPCharacterController extends BaseController with NPCharacterParser {
-  val characterData = new NPCharacterData()
+  val characterData = new NPCharacterData
+  val spellData = new SpellData
 
   def list = Action {
     Ok(jsonify(characterData.all(200))).as("application/json")
@@ -34,7 +35,7 @@ object NPCharacterController extends BaseController with NPCharacterParser {
 
       if (body != null) {
         try {
-          val saved = characterData.save(charFormParser(body, id.toInt))
+          val saved = characterData.save(charFormParser(body, id.toInt, spellData))
           if (saved.isDefined) {
             result = toJson(saved).toString
             success = true

@@ -2,10 +2,16 @@ package models.parsers
 
 import anorm._
 import anorm.SqlParser._
-import models.{NPCharacterSpell, NPCharacter, Spell}
+import models._
 import play.api.libs.json.Json._
 import play.api.libs.json._
 import scala.collection.mutable
+import models.data.SpellData
+import models.NPCharacter
+import anorm.~
+import models.SpellTrigger
+import models.NPCharacterSpell
+import models.Spell
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,15 +22,20 @@ import scala.collection.mutable
  */
 trait NPCharacterParser {
 
+  implicit val charClassWrites = writes[CharClass]
+  implicit val spellTriggerWrites = writes[SpellTrigger]
+  implicit val spellEffectWrites = writes[SpellEffect]
+  implicit val spellWrites = writes[Spell]
   implicit val charSpellWrites = writes[NPCharacterSpell]
   implicit val charWrites = writes[NPCharacter]
 
-  def charSpellRowParser: RowParser[NPCharacterSpell] = {
+  def charSpellRowParser(spells: List[Spell]): RowParser[NPCharacterSpell] = {
     get[Int]("id") ~
     get[Int]("spell_id") ~
     get[Int]("char_id") map {
       case id ~ spellId ~ charId => {
-        NPCharacterSpell(id, spellId, charId)
+        val spell = spells.find(spell => spell.id == spellId)
+        NPCharacterSpell(id, spellId, charId, spell.get)
       }
     }
   }
@@ -42,28 +53,20 @@ trait NPCharacterParser {
     get[Double]("agro_radius") map {
       case id ~ name ~ classId ~ model ~ health ~ race ~ level ~
         hostility ~ faction ~ agro_radius => {
-        val filteredSpells = spells.filter(spell => spell.char_id == id)
+        val filteredSpells = spells.filter(spell => spell.char_id == id).map(spell => spell.data)
         NPCharacter(id, name, health, race, level, classId, model,
           hostility, faction, agro_radius, filteredSpells)
       }
     }
   }
 
-  def charFormParser(data: JsValue, id: Int): NPCharacter = {
-    var spells = new mutable.MutableList[NPCharacterSpell];
-
+  def charFormParser(data: JsValue, id: Int, spellData: SpellData): NPCharacter = {
     val spellsData = (data \ "spells").as[List[JsValue]]
-    spellsData foreach {
-      spell => {
-        val id = (spell \ "id").as[Int]
-        val spell_id = (spell \ "spell_id").as[Int]
-        val char_id = (spell \ "char_id").as[Int]
+    val spells = spellsData map(spell => {
+        val spell_id = (spell \ "id").as[Int]
+        spellData.spellFormParser(spell, spell_id)
+    })
 
-        spells += NPCharacterSpell(id, spell_id, char_id)
-      }
-    }
-
-    val id = (data \ "id").as[Int]
     val name = (data \ "name").as[String]
     val health = (data \ "health").as[Int]
     val race = (data \ "race").as[Int]

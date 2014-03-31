@@ -2,16 +2,24 @@ package models.parsers
 
 import anorm._
 import anorm.SqlParser._
-import models.{CharClass, PCharacter}
+import models._
 import play.api.libs.json.Json._
 import play.api.libs.json._
 import scala.collection.mutable
+import models.CharClass
+import models.PCharacter
+import anorm.~
+import models.SpellTrigger
+import models.Spell
 
 /**
  * Created by Adam on 2/10/14.
  */
 trait PCharacterParser {
   implicit val charClassWrites = writes[CharClass]
+  implicit val spellTriggerWrites = writes[SpellTrigger]
+  implicit val spellEffectWrites = writes[SpellEffect]
+  implicit val spellWrites = writes[Spell]
   implicit val characterWrites = writes[PCharacter]
 
   def charRowParser: RowParser[PCharacter] = {

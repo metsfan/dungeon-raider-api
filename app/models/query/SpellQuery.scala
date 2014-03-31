@@ -135,4 +135,30 @@ object SpellQuery {
       |UPDATE class_spell SET slot = {slot}
       |WHERE spell_id = {spell_id} AND class_id = {class_id}
     """.stripMargin
+
+  lazy final val selectSpellByCharacter =
+    """
+      |SELECT s.*,c.name as class_name, c.id as class_id, cs.slot
+      |FROM spell s
+      |INNER JOIN npcharacter_spell nps ON nps.spell_id = s.id
+      |LEFT JOIN class c ON c.id=s.class_id
+      |LEFT JOIN class_spell cs ON cs.class_id=c.id
+      |WHERE nps.char_id = {char_id}
+    """.stripMargin
+
+  lazy final val selectSpellEffectsByCharacter =
+    """
+      |SELECT s.*
+      |FROM spell_effect s
+      |INNER JOIN npcharacter_spell nps ON nps.spell_id = s.id
+      |WHERE nps.char_id = {char_id}
+    """.stripMargin
+
+  lazy final val selectSpellTriggersByCharacter =
+    """
+      |SELECT s.*
+      |FROM spell_trigger s
+      |INNER JOIN npcharacter_spell nps ON nps.spell_id = s.id
+      |WHERE nps.char_id = {char_id}
+    """.stripMargin
 }

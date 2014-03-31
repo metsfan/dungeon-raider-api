@@ -13,7 +13,7 @@ import play.api.libs.json.{JsArray, JsValue}
 /**
  * Created by Adam on 2/10/14.
  */
-class SpellData extends SpellParser {
+class SpellData extends BaseData with SpellParser {
   def getById(id: String): Option[Spell] = {
     DB.withConnection {
       implicit conn => {
@@ -41,6 +41,22 @@ class SpellData extends SpellParser {
       val triggers = getAllTriggers(conn)
 
       SQL(SpellQuery.selectAllForClass).on("classId" -> id.toInt).as(spellRowParser(effects, triggers) *).toList
+    }
+  }
+
+  def allForCharacterById(id: String): List[Spell] = {
+    DB.withConnection { implicit conn =>
+      val effects = SQL(SpellQuery.selectSpellEffectsByCharacter)
+        .on("char_id" -> id.toInt)
+        .as(spellEffectRowParser *).toList;
+
+      val triggers = SQL(SpellQuery.selectSpellTriggersByCharacter)
+        .on("char_id" -> id.toInt)
+        .as(spellTriggerRowParser *).toList;
+
+      SQL(SpellQuery.selectSpellByCharacter)
+        .on("char_id" -> id.toInt)
+        .as(spellRowParser(effects, triggers) *).toList;
     }
   }
 

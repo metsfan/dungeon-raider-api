@@ -10,7 +10,7 @@ import models.{CharClass, PCharacter}
 /**
  * Created by Adam on 2/10/14.
  */
-class PCharacterData extends PCharacterParser {
+class PCharacterData extends BaseData with PCharacterParser {
 
   def all(user_id: String): List[PCharacter] = {
     DB.withConnection { implicit conn =>

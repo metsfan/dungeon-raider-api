@@ -1,6 +1,6 @@
 package models.data
 
-import models.parsers.NPCharacterParser
+import models.parsers.{SpellParser, NPCharacterParser}
 import play.api.db.DB
 import play.api.Play.current
 import anorm._
@@ -11,13 +11,17 @@ import models._
 /**
  * Created by Adam on 2/10/14.
  */
-class NPCharacterData extends NPCharacterParser {
+class NPCharacterData extends BaseData with NPCharacterParser {
+  val spellData = new SpellData
+
   def getById(id: String): Option[NPCharacter] = {
     DB.withConnection {
       implicit conn => {
-        val spells = SQL(NPCharacterQuery.selectSpellsById).on("id" -> id.toInt).as(charSpellRowParser *).toList
+        //val spells = SQL(NPCharacterQuery.selectSpellsById).on("id" -> id.toInt).as(charSpellRowParser *).toList
+        val spells = spellData.allForCharacterById(id)
+        val charSpells = SQL(NPCharacterQuery.selectSpellsById).on("id" -> id.toInt).as(charSpellRowParser(spells) *).toList
 
-        SQL(NPCharacterQuery.selectById).on("id" -> id.toInt).as(charRowParser(spells) *).headOption
+        SQL(NPCharacterQuery.selectById).on("id" -> id.toInt).as(charRowParser(charSpells) *).headOption
       }
     }
   }
@@ -25,9 +29,10 @@ class NPCharacterData extends NPCharacterParser {
   def all(limit: Int): List[NPCharacter] = {
     DB.withConnection {
       implicit conn => {
-        val spells = SQL(NPCharacterQuery.selectSpells).as(charSpellRowParser *).toList
+        val spells = spellData.all(1000)
+        val charSpells = SQL(NPCharacterQuery.selectSpells).as(charSpellRowParser(spells) *).toList
 
-        SQL(NPCharacterQuery.selectAll).as(charRowParser(spells) *).toList
+        SQL(NPCharacterQuery.selectAll).as(charRowParser(charSpells) *).toList
       }
     }
   }
@@ -59,8 +64,8 @@ class NPCharacterData extends NPCharacterParser {
         model.spells.foreach {
           spell => {
             var spellFields: Seq[(Any, ParameterValue[_])] = Seq(
-              "spell_id" -> spell.spell_id,
-              "char_id" -> spell.char_id
+              "spell_id" -> spell.id,
+              "char_id" -> model.id
             )
 
             if (spell.id > 0) {
