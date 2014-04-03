@@ -65,14 +65,15 @@ trait SpellParser {
     get[Int]("school") ~
     get[Option[String]]("script_name") ~
     get[Option[String]]("script_arguments") ~
-    get[Int]("delta") map {
+    get[Int]("delta") ~
+    get[Int]("max_stacks") map {
       case id ~ spellId ~ effectType ~ damageSource ~ buffSource ~
         percentSourceMin ~ percentSourceMax ~ flatAmountMin ~ flatAmountMax ~
         dotTick ~ dotDuration ~ buffDuration ~ mechanic ~ school ~
-        scriptName ~ scriptArgument ~ delta => {
+        scriptName ~ scriptArgument ~ delta ~ maxStacks => {
         SpellEffect(id, spellId, effectType, damageSource, buffSource,
         percentSourceMin, percentSourceMax, flatAmountMin, flatAmountMax, dotTick,
-        dotDuration, buffDuration, mechanic, school, scriptName, scriptArgument, delta)
+        dotDuration, buffDuration, mechanic, school, scriptName, scriptArgument, delta, maxStacks)
       }
     }
   }
@@ -109,11 +110,12 @@ trait SpellParser {
         val script_name = (effect \ "script_name").asOpt[String]
         val script_arguments = (effect \ "script_arguments").asOpt[String]
         val delta = (effect \ "delta").as[Int]
+        val max_stacks = (effect \ "max_stacks").as[Int]
 
         SpellEffect(id, spell_id, effect_type, damage_source, buff_source,
         percent_source_min, percent_source_max, flat_amount_min, flat_amount_max,
         dot_tick, dot_duration, buff_duration, mechanic, school, script_name,
-        script_arguments, delta)
+        script_arguments, delta, max_stacks)
       }
     }
 

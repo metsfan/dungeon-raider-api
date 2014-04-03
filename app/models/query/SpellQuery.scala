@@ -67,12 +67,12 @@ object SpellQuery {
       |INSERT INTO spell_effect (spell_id, effect_type, damage_source, buff_source,
       |percent_source_min, percent_source_max, flat_amount_min, flat_amount_max,
       |dot_tick, dot_duration, buff_duration, mechanic, school, script_name,
-      |script_arguments, delta)
+      |script_arguments, delta, max_stacks)
       |VALUES
       |({spell_id}, {effect_type}, {damage_source}, {buff_source},
       |{percent_source_min}, {percent_source_max}, {flat_amount_min}, {flat_amount_max},
       |{dot_tick}, {dot_duration}, {buff_duration}, {mechanic}, {school},
-      |{script_name}, {script_arguments}, {delta})
+      |{script_name}, {script_arguments}, {delta}, {max_stacks})
     """.stripMargin
 
   lazy final val insertSpellTrigger =
@@ -101,7 +101,8 @@ object SpellQuery {
       |flat_amount_min = {flat_amount_min}, flat_amount_max = {flat_amount_max},
       |dot_tick = {dot_tick}, dot_duration = {dot_duration}, buff_duration = {buff_duration},
       |mechanic = {mechanic}, school = {school}, script_name = {script_name},
-      |script_arguments = {script_arguments}, delta = {delta} WHERE id = {effect_id}
+      |script_arguments = {script_arguments}, delta = {delta}, max_stacks = {max_stacks}
+      |WHERE id = {effect_id}
     """.stripMargin
 
   lazy final val updateSpellTrigger =
@@ -128,6 +129,16 @@ object SpellQuery {
   lazy final val deleteTriggers =
     """
       |DELETE FROM spell_trigger WHERE spell_id = {spell_id}
+    """.stripMargin
+
+  lazy final val deleteEffect =
+    """
+      |DELETE FROM spell_effect WHERE id = {id}
+    """.stripMargin
+
+  lazy final val deleteTrigger =
+    """
+      |DELETE FROM spell_trigger WHERE id = {id}
     """.stripMargin
 
   lazy final val updateSpellSlot =

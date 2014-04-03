@@ -14,10 +14,10 @@ var ClassSpellEditView = Backbone.View.extend({
     fields: [
         ["damage_source", "percent_source", "flat_amount", "school"], // Damage
         ["damage_source", "percent_source", "flat_amount", "school"], // Healing
-        ["damage_source", "dot_duration", "percent_source", "flat_amount", "school"], // DamageOverTime
-        ["damage_source", "dot_duration", "percent_source", "flat_amount", "school"], // HealingOverTime
-        ["buff_source", "duration", "percent_source", "flat_amount", "school"], // Buff
-        ["buff_source", "duration", "percent_source", "flat_amount", "school"], // Debuff
+        ["damage_source", "dot_duration", "percent_source", "flat_amount", "max_stacks", "school"], // DamageOverTime
+        ["damage_source", "dot_duration", "percent_source", "flat_amount", "max_stacks", "school"], // HealingOverTime
+        ["buff_source", "duration", "percent_source", "flat_amount", "max_stacks", "school"], // Buff
+        ["buff_source", "duration", "percent_source", "flat_amount", "max_stacks", "school"], // Debuff
         ["mechanic", "duration", "percent_source", "flat_amount", "school"], // Mechanic
         ["script_name", "script_arguments"] // Script
     ],
@@ -56,6 +56,40 @@ var ClassSpellEditView = Backbone.View.extend({
                     this._showEffectFields($(e.target))
                 }, this))
 
+                $(document).on("click", ".effect-delete", $.proxy(function(e) {
+                    var accept = confirm("Are you sure you want to delete this effect?");
+
+                    if (accept) {
+                        var button = $(e.target)
+                        var id = parseInt(button.attr("data-id"))
+                        if (id > 0) {
+                            var url = "/spell/effect/" + id
+                            Network.send(url, "DELETE", {});
+                        }
+
+                        button.parents(".spell-effect-container").remove()
+                    }
+
+                    return false
+                }, this));
+
+                $(document).on("click", ".trigger-delete", $.proxy(function(e) {
+                    var accept = confirm("Are you sure you want to delete this trigger?");
+
+                    if (accept) {
+                        var button = $(e.target)
+                        var id = parseInt(button.attr("data-id"))
+                        if (id > 0) {
+                            var url = "/spell/trigger/" + id
+                            Network.send(url, "DELETE", {});
+                        }
+
+                        button.parents(".spell-trigger-container").remove()
+                    }
+
+                    return false
+                }, this));
+
                 if (this.spell) {
                     $("#spell_id").val(this.spell.id);
                     $("#name").val(this.spell.name);
@@ -87,7 +121,7 @@ var ClassSpellEditView = Backbone.View.extend({
 
                 $("#add-effect-button").on("click", function() {
                     var i = $("#spell-effects").children().length;
-                    Template.load("spell_effect", { "index" : i }, "#spell-effects", {
+                    Template.load("spell_effect", { "index" : i, "id" : 0 }, "#spell-effects", {
                         "append" : true,
                         "callback" : function() {
                             $("#effect-effect_type-" + i).change()
@@ -137,7 +171,8 @@ var ClassSpellEditView = Backbone.View.extend({
                             "school" : parseInt($("#effect-school-" + index).val()),
                             "script_name" : $("#effect-script_name-" + index).val(),
                             "script_arguments" : $("#effect-script_arguments-" + index).val(),
-                            "delta" : parseInt(i)
+                            "delta" : parseInt(i),
+                            "max_stacks": parseInt($("#effect-max_stacks-" + index).val())
                         });
                     });
 
@@ -167,7 +202,7 @@ var ClassSpellEditView = Backbone.View.extend({
         if (!i) i = 0
 
         var effect = effects[i]
-        Template.load("spell_effect", { "index" : i }, "#spell-effects", {
+        Template.load("spell_effect", { "index" : i, "id": effect.id }, "#spell-effects", {
             "append" : true,
             "callback" : $.proxy(function() {
                 $("#effect-id-" + i).val(effect.id),
@@ -185,7 +220,7 @@ var ClassSpellEditView = Backbone.View.extend({
                 $("#effect-school-" + i).val(effect.school),
                 $("#effect-script_name-" + i).val(effect.script_name),
                 $("#effect-script_arguments-" + i).val(effect.script_arguments)
-
+                $("#effect-max_stacks-" + i).val(effect.max_stacks)
                 $("#effect-effect_type-" + i).change()
 
                 if (effects.length > i + 1) {
@@ -199,7 +234,7 @@ var ClassSpellEditView = Backbone.View.extend({
         if (!i) i = 0
 
         var trigger = this.spell.triggers[i];
-        Template.load("spell_trigger", { "index" : i }, "#spell-triggers", {
+        Template.load("spell_trigger", { "index" : i, "id": trigger.id }, "#spell-triggers", {
             "append" : true,
             "callback" : function() {
                 $("#trigger-id-" + i).val(trigger.id);

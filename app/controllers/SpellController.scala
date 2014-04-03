@@ -82,4 +82,14 @@ object SpellController extends BaseController with SpellParser {
     val result = spellData.delete(id)
     Ok(toJson(Map("result" -> result))).as("application/json")
   }
+
+  def deleteEffect(id: String) = Action {
+    val result = spellData.deleteEffect(id)
+    Ok(toJson(Map("result" -> result))).as("application/json")
+  }
+
+  def deleteTrigger(id: String) = Action {
+    val result = spellData.deleteTrigger(id)
+    Ok(toJson(Map("result" -> result))).as("application/json")
+  }
 }

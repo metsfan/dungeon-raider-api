@@ -107,7 +107,8 @@ class SpellData extends BaseData with SpellParser {
             "school" -> effect.school,
             "script_name" -> effect.script_name,
             "script_arguments" -> effect.script_arguments,
-            "delta" -> effect.delta
+            "delta" -> effect.delta,
+            "max_stacks" -> effect.max_stacks
           )
           if (effect.id > 0) {
             effectFields ++= Seq[(Any, ParameterValue[_])]("effect_id" -> effect.id)
@@ -195,6 +196,24 @@ class SpellData extends BaseData with SpellParser {
         SQL(SpellQuery.deleteEffects).on("spell_id" -> spell_id).executeUpdate()
         SQL(SpellQuery.deleteTriggers).on("spell_id" -> spell_id).executeUpdate()
 
+        1
+      }
+    }
+  }
+
+  def deleteEffect(id: String): Int = {
+    DB.withConnection {
+      implicit conn => {
+        SQL(SpellQuery.deleteEffect).on("id" -> id.toInt).executeUpdate()
+        1
+      }
+    }
+  }
+
+  def deleteTrigger(id: String): Int = {
+    DB.withConnection {
+      implicit conn => {
+        SQL(SpellQuery.deleteTrigger).on("id" -> id.toInt).executeUpdate()
         1
       }
     }
