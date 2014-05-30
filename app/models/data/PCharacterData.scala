@@ -14,7 +14,7 @@ class PCharacterData extends BaseData with PCharacterParser {
 
   def all(user_id: String): List[PCharacter] = {
     DB.withConnection { implicit conn =>
-      SQL(PCharacterQuery.selectAllForUser).on("user_id" -> user_id.toInt).as(charRowParser *)
+      SQL(PCharacterQuery.selectAllForUser).on("user_id" -> user_id).as(charRowParser *)
     }
   }
 

@@ -31,7 +31,7 @@ trait PCharacterParser {
     get[Int]("race") ~
     get[Int]("level") ~
     get[Int]("experience") ~
-    get[Int]("user_id") map {
+    get[String]("user_id") map {
       case id ~ name ~ classId ~ model ~ health ~ race ~ level ~ experience ~ userId => {
         PCharacter(id, userId, name, classId, model, health, race, level, experience)
       }
@@ -56,7 +56,7 @@ trait PCharacterParser {
     val level = (data \ "level").as[Int]
     val class_id = (data \ "class_id").as[Int]
     val model = (data \ "model").as[String]
-    val user_id = (data \ "user_id").as[Int]
+    val user_id = (data \ "user_id").as[String]
     val experience = (data \ "experience").as[Int]
 
     PCharacter(id, user_id, name, class_id, model, health, race, level, experience)
