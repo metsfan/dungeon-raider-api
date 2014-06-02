@@ -2,7 +2,7 @@ package controllers
 
 import play.api.mvc.Action
 import models.parsers.UserParser
-import models.data.UserData
+import models.data.{TownData, UserData}
 import play.api.libs.json.Json._
 
 /**
@@ -14,6 +14,7 @@ import play.api.libs.json.Json._
  */
 object UserController extends BaseController with UserParser {
   val userData = new UserData
+  val townData = new TownData
 
   def register() = Action {
     implicit request => {
@@ -57,7 +58,8 @@ object UserController extends BaseController with UserParser {
     val user = userData.getById(id)
 
     val result = if (user.isDefined) {
-      jsonify(user.get.profile)
+      val towns = townData.getByUserId(user.get.id)
+      jsonify(user.get.profile, towns)
     } else {
       toJson(Map(
         "success" -> false

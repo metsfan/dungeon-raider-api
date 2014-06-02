@@ -18,6 +18,7 @@ import models.User
 trait UserParser {
 
   implicit val userProfileWrites = writes[UserProfile]
+  implicit val townWrites = writes[Town]
 
   def userRowParser(): RowParser[User] = {
     get[String]("id") ~
@@ -67,10 +68,17 @@ trait UserParser {
   }
 
   def jsonify(user: List[UserProfile]): JsValue = {
-    toJson(user)
+    toJson(Map("users" -> toJson(user)))
   }
 
   def jsonify(user: UserProfile): JsValue = {
-    toJson(user)
+    toJson(Map("user" -> toJson(user)))
+  }
+
+  def jsonify(user: UserProfile, towns: List[Town]): JsValue = {
+    toJson(Map(
+      "user" -> toJson(user),
+      "towns" -> toJson(towns)
+    ))
   }
 }

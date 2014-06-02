@@ -18,6 +18,10 @@ PUT           /spells/:classId/slots        controllers.SpellController.saveSlot
 DELETE        /spell/effect/:id             controllers.SpellController.deleteEffect(id)
 DELETE        /spell/trigger/:id            controllers.SpellController.deleteTrigger(id)
 
+# Towns
+GET           /town/:id                     controllers.TownController.get(id)
+GET           /towns/user/:user_id          controllers.TownController.getForUser(user_id)
+
 # Classes
 GET           /classes                      controllers.PCharacterController.classList
 
