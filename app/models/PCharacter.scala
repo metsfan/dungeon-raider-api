@@ -3,12 +3,12 @@ package models
 import java.util.UUID
 import scala.slick.driver.PostgresDriver.simple._
 
-case class PCharacter(var id: Int, user_id: String, name: String, class_id: Int, model: String, health: Int,
+case class PCharacter(var id: UUID, user_id: UUID, name: String, class_id: Int, model: String, health: Int,
                       race: Int, level: Int, experience: Int)
 
 class PCharacters(tag: Tag) extends Table[PCharacter](tag, Some("public"), "pcharacter") {
-  def id = column[Int]("id")
-  def user_id = column[String]("user_id")
+  def id = column[UUID]("id")
+  def user_id = column[UUID]("user_id")
   def name = column[String]("name")
   def class_id = column[Int]("class_id")
   def model = column[String]("model")

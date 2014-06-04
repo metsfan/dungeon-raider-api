@@ -15,15 +15,15 @@ class PCharacterData extends BaseData with PCharacterParser {
   val pcharacters = TableQuery[PCharacters]
   val classes = TableQuery[CharClasses]
 
-  def all(user_id: String): List[PCharacter] = {
+  def all(user_id: UUID): List[PCharacter] = {
     DB.withSession { implicit session =>
       pcharacters.filter(_.user_id === user_id).list
     }
   }
 
-  def get(id: String): Option[PCharacter] = {
+  def get(id: UUID): Option[PCharacter] = {
     DB.withSession { implicit session =>
-      pcharacters.filter(_.id === id.toInt).firstOption
+      pcharacters.filter(_.id === id).firstOption
     }
   }
 

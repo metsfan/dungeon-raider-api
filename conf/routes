@@ -33,8 +33,8 @@ DELETE        /npcharacter/:id              controllers.NPCharacterController.de
 
 # Player Characters
 
-GET           /pcharacters/:user_id         controllers.PCharacterController.list(user_id)
-GET           /pcharacter/:id               controllers.PCharacterController.get(id)
+GET           /pcharacters/:user_id         controllers.PCharacterController.list(user_id: java.util.UUID)
+GET           /pcharacter/:id               controllers.PCharacterController.get(id: java.util.UUID)
 
 # Uploading
 
