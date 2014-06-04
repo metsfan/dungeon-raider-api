@@ -62,8 +62,18 @@ trait PCharacterParser {
     PCharacter(id, user_id, name, class_id, model, health, race, level, experience)
   }
 
+  def jsonify(character: Option[PCharacter], spells: List[Spell]) = {
+    val characterJsValue: JsObject = toJson(character).asInstanceOf[JsObject]
+
+    toJson(Map(
+      "character" -> (characterJsValue ++ obj("spells" -> toJson(spells)))
+    ))
+  }
+
   def jsonify(characters: List[PCharacter]) = {
-    toJson(characters)
+    toJson(Map(
+      "characters" -> toJson(characters)
+    ))
   }
 
   def jsonify(character: Option[PCharacter]) = {

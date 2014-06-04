@@ -1,32 +1,35 @@
 package models.data
 
 import models.parsers.PCharacterParser
-import play.api.db.DB
 import play.api.Play.current
-import anorm._
 import models.query.PCharacterQuery
-import models.{CharClass, PCharacter}
+import models.{CharClasses, PCharacters, CharClass, PCharacter}
+import scala.slick.driver.PostgresDriver.simple._
+import play.api.db.slick.DB
+import java.util.UUID
 
 /**
  * Created by Adam on 2/10/14.
  */
 class PCharacterData extends BaseData with PCharacterParser {
+  val pcharacters = TableQuery[PCharacters]
+  val classes = TableQuery[CharClasses]
 
   def all(user_id: String): List[PCharacter] = {
-    DB.withConnection { implicit conn =>
-      SQL(PCharacterQuery.selectAllForUser).on("user_id" -> user_id).as(charRowParser *)
+    DB.withSession { implicit session =>
+      pcharacters.filter(_.user_id === user_id).list
     }
   }
 
   def get(id: String): Option[PCharacter] = {
-    DB.withConnection { implicit conn =>
-      SQL(PCharacterQuery.selectById).on("id" -> id.toInt).as(charRowParser *).headOption
+    DB.withSession { implicit session =>
+      pcharacters.filter(_.id === id.toInt).firstOption
     }
   }
 
   def allClasses: List[CharClass] = {
-    DB.withConnection { implicit conn =>
-      SQL(PCharacterQuery.selectAllClasses).as(classRowParser *)
+    DB.withSession { implicit session =>
+      classes.list
     }
   }
 }

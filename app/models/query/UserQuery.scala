@@ -6,7 +6,7 @@ package models.query
 object UserQuery {
   lazy final val selectUser =
     """
-      |SELECT * FROM public.user
+      |SELECT username FROM public.user
       |WHERE id = {id}
     """.stripMargin
 

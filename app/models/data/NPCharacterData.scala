@@ -40,7 +40,7 @@ class NPCharacterData extends BaseData with NPCharacterParser {
   def save(model: NPCharacter): Option[NPCharacter] = {
     DB.withConnection {
       implicit conn => {
-        var charFields: Seq[(Any, ParameterValue[_])] = Seq(
+        /*var charFields: Seq[(Any, ParameterValue[_])] = Seq(
           "name" -> model.name,
           "health" -> model.health,
           "race" -> model.race,
@@ -77,7 +77,7 @@ class NPCharacterData extends BaseData with NPCharacterParser {
               }
             }
           }
-        }
+        }*/
 
         Option[NPCharacter](model)
       }

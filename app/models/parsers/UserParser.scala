@@ -16,34 +16,37 @@ import models.User
  * Created by Adam on 5/25/14.
  */
 trait UserParser {
+  implicit object UuidWrites extends Writes[java.util.UUID] {
+    def writes(u: java.util.UUID) = JsString(u.toString())
+  }
 
   implicit val userProfileWrites = writes[UserProfile]
   implicit val townWrites = writes[Town]
 
-  def userRowParser(): RowParser[User] = {
-    get[String]("id") ~
-    get[String]("username") ~
-    get[String]("email") ~
-    get[String]("password") ~
-    get[String]("salt") ~
-    get[String]("first_name") ~
-    get[String]("last_name") map {
-      case id ~ username ~ email ~ password ~ salt ~ firstName ~ lastName =>
-        User(id, UserAuth(id, username, email, password, salt),
-          UserProfile(id, username, email, firstName, lastName))
-    }
-  }
-
-  def userAuthRowParser(): RowParser[UserAuth] = {
-    get[String]("id") ~
-      get[String]("username") ~
-      get[String]("email") ~
-      get[String]("password") ~
-      get[String]("salt") map {
-      case id ~ username ~ email ~ password ~ salt =>
-        UserAuth(id, username, email, password, salt)
-    }
-  }
+//  def userRowParser(): RowParser[User] = {
+//    get[String]("id") ~
+//    get[String]("username") ~
+//    get[String]("email") ~
+//    get[String]("password") ~
+//    get[String]("salt") ~
+//    get[String]("first_name") ~
+//    get[String]("last_name") map {
+//      case id ~ username ~ email ~ password ~ salt ~ firstName ~ lastName =>
+//        User(id, UserAuth(id, username, email, password, salt),
+//          UserProfile(UUID.randomUUID(), username, email, firstName, lastName))
+//    }
+//  }
+//
+//  def userAuthRowParser(): RowParser[UserAuth] = {
+//    get[String]("id") ~
+//      get[String]("username") ~
+//      get[String]("email") ~
+//      get[String]("password") ~
+//      get[String]("salt") map {
+//      case id ~ username ~ email ~ password ~ salt =>
+//        UserAuth(id, username, email, password, salt)
+//    }
+//  }
 
   def registerFormParser(data: Map[String, Seq[String]]) = {
     val username = data.get("username").get.head
@@ -55,8 +58,7 @@ trait UserParser {
     val salt = generateSalt
     val hashedPassword = password.bcrypt(salt)
 
-    User("", UserAuth("", username, email, hashedPassword, salt),
-      UserProfile("", username, email, first_name, last_name))
+    User(null, username, email, hashedPassword, salt, first_name, last_name)
   }
 
   def loginFormParser(data: Map[String, Seq[String]]) = {
@@ -64,7 +66,7 @@ trait UserParser {
     val password = data.get("password").getOrElse(Seq[String]()).headOption.getOrElse("")
     val email = data.get("email").getOrElse(Seq[String]()).headOption.getOrElse("")
 
-    UserAuth("", username, email, password, "")
+    UserAuth(null, username, email, password, "")
   }
 
   def jsonify(user: List[UserProfile]): JsValue = {

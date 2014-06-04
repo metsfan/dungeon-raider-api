@@ -5,7 +5,7 @@
 # User
 POST          /user/register                controllers.UserController.register()
 POST          /user/login                   controllers.UserController.login()
-GET           /user/:id                    controllers.UserController.get(id)
+GET           /user/:id                    controllers.UserController.get(id: java.util.UUID)
 #POST          /user/:id                    controllers.UserController.save(id)
 
 # Spells
@@ -19,8 +19,8 @@ DELETE        /spell/effect/:id             controllers.SpellController.deleteEf
 DELETE        /spell/trigger/:id            controllers.SpellController.deleteTrigger(id)
 
 # Towns
-GET           /town/:id                     controllers.TownController.get(id)
-GET           /towns/user/:user_id          controllers.TownController.getForUser(user_id)
+GET           /town/:id                     controllers.TownController.get(id: java.util.UUID)
+GET           /towns/user/:user_id          controllers.TownController.getForUser(user_id: java.util.UUID)
 
 # Classes
 GET           /classes                      controllers.PCharacterController.classList

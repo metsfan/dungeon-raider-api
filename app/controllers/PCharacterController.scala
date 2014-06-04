@@ -19,13 +19,15 @@ object PCharacterController extends BaseController with PCharacterParser {
 
   def get(id: String) = Action {
     val character = characterData.get(id)
-    if (character.isDefined) {
+    val spells = if (character.isDefined) {
       val classSpells = spellData.allForClass(character.get.class_id.toString)
       val globalSpells = spellData.allForClass("1");
-      character.get.spells = globalSpells ++ classSpells;
+      globalSpells ++ classSpells
+    } else {
+      List[Spell]()
     }
 
-    Ok(jsonify(character)).as("application/json")
+    Ok(jsonify(character, spells)).as("application/json")
   }
 
   def classList = Action {

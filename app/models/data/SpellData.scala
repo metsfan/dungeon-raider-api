@@ -63,7 +63,7 @@ class SpellData extends BaseData with SpellParser {
   def save(model: Spell): Option[Spell] = {
     DB.withConnection {
       implicit conn => {
-        var spellFields: Seq[(Any, ParameterValue[_])] = Seq(
+        /*var spellFields: Seq[(Any, ParameterValue[_])] = Seq(
           "name" -> model.name,
           "cast_time" -> model.cast_time,
           "cooldown" -> model.cooldown,
@@ -139,7 +139,7 @@ class SpellData extends BaseData with SpellParser {
               id => trigger.id = id.toInt
             })
           }
-        })
+        })*/
 
         Option[Spell](model)
       }
@@ -151,7 +151,7 @@ class SpellData extends BaseData with SpellParser {
     DB.withConnection { implicit conn =>
       val class_id = (classData \ "id").as[Int]
 
-      val fields: Seq[(Any, ParameterValue[_])] = Seq(
+      /*val fields: Seq[(Any, ParameterValue[_])] = Seq(
         "spell_id" -> spell.id,
         "class_id" -> class_id
       )
@@ -160,7 +160,7 @@ class SpellData extends BaseData with SpellParser {
         SQL(SpellQuery.insertSpellClass).on(fields: _*).execute()
       } else {
         //SQL(SpellQuery.updateSpellClass).on(fields: _*).execute()
-      }
+      }*/
     }
   }
 

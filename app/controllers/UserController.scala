@@ -4,6 +4,9 @@ import play.api.mvc.Action
 import models.parsers.UserParser
 import models.data.{TownData, UserData}
 import play.api.libs.json.Json._
+import models.{UserProfile, User}
+import scala.slick.lifted.TableQuery
+import java.util.UUID
 
 /**
  * Created with IntelliJ IDEA.
@@ -54,12 +57,11 @@ object UserController extends BaseController with UserParser {
     }
   }
 
-  def get(id: String) = Action {
+  def get(id: UUID) = Action {
     val user = userData.getById(id)
 
     val result = if (user.isDefined) {
-      val towns = townData.getByUserId(user.get.id)
-      jsonify(user.get.profile, towns)
+      jsonify(user.get.profile)
     } else {
       toJson(Map(
         "success" -> false
