@@ -13,7 +13,7 @@ GET           /spells                       controllers.SpellController.list
 GET           /spell/:id                    controllers.SpellController.get(id)
 PUT           /spell/:id                    controllers.SpellController.save(id)
 DELETE        /spell/:id                    controllers.SpellController.delete(id)
-GET           /spells/:classId              controllers.SpellController.listByClass(classId)
+GET           /spells/:classId              controllers.SpellController.listByClass(classId: Int)
 PUT           /spells/:classId/slots        controllers.SpellController.saveSlots(classId)
 DELETE        /spell/effect/:id             controllers.SpellController.deleteEffect(id)
 DELETE        /spell/trigger/:id            controllers.SpellController.deleteTrigger(id)

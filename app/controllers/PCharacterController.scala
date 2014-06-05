@@ -3,7 +3,7 @@ package controllers
 import models.parsers.PCharacterParser
 import models.data.{SpellData, PCharacterData}
 import play.api.mvc.Action
-import models.Spell
+import models.{Spell}
 import java.util.UUID
 
 /**
@@ -21,14 +21,12 @@ object PCharacterController extends BaseController with PCharacterParser {
   def get(id: UUID) = Action {
     val character = characterData.get(id)
     val spells = if (character.isDefined) {
-      val classSpells = spellData.allForClass(character.get.class_id.toString)
-      val globalSpells = spellData.allForClass("1");
-      globalSpells ++ classSpells
-    } else {
-      List[Spell]()
+      val classSpells = spellData.allForClass(character.get.class_id)
+      val globalSpells = spellData.allForClass(1);
+      character.get.spells = globalSpells ++ classSpells
     }
 
-    Ok(jsonify(character, spells)).as("application/json")
+    Ok(jsonify(character.get)).as("application/json")
   }
 
   def classList = Action {

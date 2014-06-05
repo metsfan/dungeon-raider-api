@@ -1,51 +1,71 @@
 package models.data
 
-import play.api.db.DB
 import play.api.Play.current
-import anorm._
 import models.query.SpellQuery
-import anorm.ParameterValue
+import scala.slick.driver.PostgresDriver.simple._
+import play.api.db.slick.DB
 import java.sql.Connection
 import models._
 import models.parsers.SpellParser
 import play.api.libs.json.{JsArray, JsValue}
+import java.util.UUID
 
 /**
  * Created by Adam on 2/10/14.
  */
 class SpellData extends BaseData with SpellParser {
-  def getById(id: String): Option[Spell] = {
-    DB.withConnection {
-      implicit conn => {
-        val effects = getEffectsForSpell(conn, id)
-        val triggers = getTriggersForSpell(conn, id)
+  val spells = TableQuery[Spells]
+  val spellEffects = TableQuery[SpellEffects]
+  val spellTriggers = TableQuery[SpellTriggers]
+  val classSpells = TableQuery[ClassSpells]
+  val charClasses = TableQuery[CharClasses]
 
-        SQL(SpellQuery.selectById).on("spellId" -> id.toInt).as(spellRowParser(effects, triggers) *).headOption
+  def getById(id: String): Option[Spell] = {
+    DB.withSession { implicit session =>
+      val spell = spells.filter(_.id === id.toInt).firstOption
+
+      if (spell.isDefined) {
+        spell.get.effects = spellEffects.filter(_.spell_id === id.toInt).list
+        spell.get.triggers = spellTriggers.filter(_.spell_id === id.toInt).list
       }
+
+      spell
     }
   }
 
   def all(limit: Int): List[Spell] = {
-    DB.withConnection {
-      implicit conn => {
-        val effects = getAllEffects(conn)
-        val triggers = getAllTriggers(conn)
-        SQL(SpellQuery.selectAll).as(spellRowParser(effects, triggers) *).toList
+    DB.withSession { implicit session =>
+      spells.list.take(limit)
+    }
+  }
+
+  def allForClass(id: Int): List[Spell] = {
+    DB.withSession { implicit session =>
+      val q = (for {
+        (s, c) <- spells innerJoin classSpells on (_.id === _.spell_id)
+      } yield(s, c)).filter(_._2.class_id === id)
+
+      val effects = (for {
+        (e, c) <- spellEffects innerJoin classSpells on (_.spell_id === _.spell_id)
+      } yield(e, c)).filter(_._2.class_id === id).list map(_._1)
+
+      val triggers = (for {
+        (t, c) <- spellTriggers innerJoin classSpells on (_.spell_id === _.spell_id)
+      } yield(t, c)).filter(_._2.class_id === id).list map(_._1)
+
+      q.list map { case (spell, classSpell) =>
+        spell.effects = effects.filter(_.spell_id == spell.id)
+        spell.triggers = triggers.filter(_.spell_id == spell.id)
+        spell.classSpell = Some(classSpell)
+        spell.charClass = charClasses.filter(_.id === spell.class_id).firstOption
+
+        spell
       }
     }
   }
 
-  def allForClass(id: String): List[Spell] = {
-    DB.withConnection { implicit conn =>
-      val effects = getAllEffects(conn)
-      val triggers = getAllTriggers(conn)
-
-      SQL(SpellQuery.selectAllForClass).on("classId" -> id.toInt).as(spellRowParser(effects, triggers) *).toList
-    }
-  }
-
   def allForCharacterById(id: String): List[Spell] = {
-    DB.withConnection { implicit conn =>
+    /*DB.withConnection { implicit conn =>
       val effects = SQL(SpellQuery.selectSpellEffectsByCharacter)
         .on("char_id" -> id.toInt)
         .as(spellEffectRowParser *).toList;
@@ -57,13 +77,25 @@ class SpellData extends BaseData with SpellParser {
       SQL(SpellQuery.selectSpellByCharacter)
         .on("char_id" -> id.toInt)
         .as(spellRowParser(effects, triggers) *).toList;
+    }*/
+    DB.withSession { implicit session =>
+      List[Spell]()
     }
   }
 
   def save(model: Spell): Option[Spell] = {
-    DB.withConnection {
+    DB.withSession { implicit session =>
+      if (model.id == null) {
+        spells.insert(model)
+      } else {
+        spells.update(model)
+      }
+
+      Option[Spell](model)
+    }
+    /*DB.withConnection {
       implicit conn => {
-        /*var spellFields: Seq[(Any, ParameterValue[_])] = Seq(
+        var spellFields: Seq[(Any, ParameterValue[_])] = Seq(
           "name" -> model.name,
           "cast_time" -> model.cast_time,
           "cooldown" -> model.cooldown,
@@ -139,19 +171,18 @@ class SpellData extends BaseData with SpellParser {
               id => trigger.id = id.toInt
             })
           }
-        })*/
+        })
 
         Option[Spell](model)
       }
-    }
-
+    }*/
   }
 
   def saveForClass(spell: Spell, classData: JsValue, isNew: Boolean) {
-    DB.withConnection { implicit conn =>
+    /*DB.withConnection { implicit conn =>
       val class_id = (classData \ "id").as[Int]
 
-      /*val fields: Seq[(Any, ParameterValue[_])] = Seq(
+      val fields: Seq[(Any, ParameterValue[_])] = Seq(
         "spell_id" -> spell.id,
         "class_id" -> class_id
       )
@@ -160,12 +191,12 @@ class SpellData extends BaseData with SpellParser {
         SQL(SpellQuery.insertSpellClass).on(fields: _*).execute()
       } else {
         //SQL(SpellQuery.updateSpellClass).on(fields: _*).execute()
-      }*/
-    }
+      }
+    }*/
   }
 
   def saveSlots(classId: String, data: JsValue) {
-    DB.withConnection { implicit conn =>
+    /*DB.withConnection { implicit conn =>
       val spells = data.as[List[JsValue]]
 
       spells.foreach { spell =>
@@ -179,17 +210,17 @@ class SpellData extends BaseData with SpellParser {
         ).executeUpdate
       }
 
-      /*val updateSql = SQL(SpellQuery.updateSpellSlot)
+      val updateSql = SQL(SpellQuery.updateSpellSlot)
       val updateStmt = (updateSql.asBatch /: params) (
         (sql, elem) => sql.addBatchParams(elem)
       )
 
-      updateStmt.execute*/
-    }
+      updateStmt.execute
+    }*/
   }
 
   def delete(id: String): Int = {
-    DB.withConnection {
+    /*DB.withConnection {
       implicit conn => {
         val spell_id = id.toInt;
         SQL(SpellQuery.deleteSpell).on("id" -> spell_id).executeUpdate()
@@ -198,30 +229,33 @@ class SpellData extends BaseData with SpellParser {
 
         1
       }
-    }
+    }*/
+    0
   }
 
   def deleteEffect(id: String): Int = {
-    DB.withConnection {
+    /*DB.withConnection {
       implicit conn => {
         SQL(SpellQuery.deleteEffect).on("id" -> id.toInt).executeUpdate()
         1
       }
-    }
+    }*/
+    0
   }
 
   def deleteTrigger(id: String): Int = {
-    DB.withConnection {
+    /*DB.withConnection {
       implicit conn => {
         SQL(SpellQuery.deleteTrigger).on("id" -> id.toInt).executeUpdate()
         1
       }
-    }
+    }*/
+    0
   }
 
   /** Private */
 
-  def getAllEffects(implicit conn: Connection): List[SpellEffect] = {
+  /*def getAllEffects(implicit conn: Connection): List[SpellEffect] = {
     SQL(SpellQuery.selectAllEffects).as(spellEffectRowParser *).toList
   }
 
@@ -235,5 +269,5 @@ class SpellData extends BaseData with SpellParser {
 
   def getTriggersForSpell(implicit conn: Connection, spellId: String): List[SpellTrigger] = {
     SQL(SpellQuery.selectTriggersForSpell).on("spellId" -> spellId.toInt).as(spellTriggerRowParser *).toList
-  }
+  }*/
 }

@@ -21,7 +21,7 @@ trait SpellParser {
   implicit val spellEffectWrites = writes[SpellEffect]
   implicit val spellWrites = writes[Spell]
 
-  def spellRowParser(effects: List[SpellEffect], triggers: List[SpellTrigger]): RowParser[Spell] = {
+  /*def spellRowParser(effects: List[SpellEffect], triggers: List[SpellTrigger]): RowParser[Spell] = {
     get[Int]("id") ~
     get[String]("name") ~
     get[Int]("cast_time") ~
@@ -88,7 +88,7 @@ trait SpellParser {
         SpellTrigger(id, spellId, triggerSpellId, chance, triggerType)
       }
     }
-  }
+  }*/
 
   def spellFormParser(data: JsValue, id: Int): Spell = {
     val effects = (data \ "effects").as[List[JsValue]] map {
@@ -158,15 +158,23 @@ trait SpellParser {
     }
 
     Spell(id, name, castTime, cooldown, spellType, castType,
-      radius, range, shape, selfCast, charClass, slot, iconUrl,
-      effects, triggers.toList)
+      radius, range, shape, selfCast, charClass.get.id, iconUrl)
   }
 
-  def jsonify(spells: List[Spell]) = {
-    toJson(spells)
+  def jsonify(spells: List[Spell]): JsValue = {
+    toJson(Map(
+      "spells" -> spells.map(jsonify(_))
+    ))
   }
 
-  def jsonify(spell: Option[Spell]) = {
-    toJson(spell)
+  def jsonify(spell: Spell): JsValue = {
+    val spellObj = toJson(spell).asInstanceOf[JsObject]
+    toJson(Map(
+      "spells" -> (spellObj ++ Json.obj(
+        "char_class" -> toJson(spell.charClass),
+        "effects" -> toJson(spell.effects),
+        "triggers" -> toJson(spell.triggers)
+      ))
+    ))
   }
 }

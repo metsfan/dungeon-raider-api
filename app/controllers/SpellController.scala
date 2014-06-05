@@ -13,12 +13,12 @@ object SpellController extends BaseController with SpellParser {
     Ok(jsonify(spellData.all(200))).as("application/json")
   }
 
-  def listByClass(classId: String) = Action {
+  def listByClass(classId: Int) = Action {
     Ok(jsonify(spellData.allForClass(classId))).as("application/json")
   }
 
   def get(id: String) = Action {
-    Ok(jsonify(spellData.getById(id))).as("application/json")
+    Ok(jsonify(spellData.getById(id).get)).as("application/json")
   }
 
   def save(id: String) = Action {

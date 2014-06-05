@@ -4,7 +4,9 @@ import java.util.UUID
 import scala.slick.driver.PostgresDriver.simple._
 
 case class PCharacter(var id: UUID, user_id: UUID, name: String, class_id: Int, model: String, health: Int,
-                      race: Int, level: Int, experience: Int)
+                      race: Int, level: Int, experience: Int) {
+  var spells: List[Spell] = List[Spell]()
+}
 
 class PCharacters(tag: Tag) extends Table[PCharacter](tag, Some("public"), "pcharacter") {
   def id = column[UUID]("id")
