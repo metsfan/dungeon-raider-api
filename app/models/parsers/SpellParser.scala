@@ -167,14 +167,17 @@ trait SpellParser {
     ))
   }
 
-  def jsonify(spell: Spell): JsValue = {
-    val spellObj = toJson(spell).asInstanceOf[JsObject]
+  def jsonifyWrapped(spell: Spell): JsValue = {
     toJson(Map(
-      "spells" -> (spellObj ++ Json.obj(
-        "char_class" -> toJson(spell.charClass),
-        "effects" -> toJson(spell.effects),
-        "triggers" -> toJson(spell.triggers)
-      ))
+      "spell" -> jsonify(spell)
+    ))
+  }
+
+  def jsonify(spell: Spell): JsValue = {
+    (toJson(spell).asInstanceOf[JsObject] ++ Json.obj(
+      "char_class" -> toJson(spell.charClass),
+      "effects" -> toJson(spell.effects),
+      "triggers" -> toJson(spell.triggers)
     ))
   }
 }

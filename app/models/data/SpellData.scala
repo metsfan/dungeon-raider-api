@@ -220,37 +220,29 @@ class SpellData extends BaseData with SpellParser {
   }
 
   def delete(id: String): Int = {
-    /*DB.withConnection {
-      implicit conn => {
-        val spell_id = id.toInt;
-        SQL(SpellQuery.deleteSpell).on("id" -> spell_id).executeUpdate()
-        SQL(SpellQuery.deleteEffects).on("spell_id" -> spell_id).executeUpdate()
-        SQL(SpellQuery.deleteTriggers).on("spell_id" -> spell_id).executeUpdate()
+    val spell_id = id.toInt;
 
-        1
-      }
-    }*/
-    0
+    DB.withSession { implicit session =>
+      spells.filter(_.id === spell_id).delete
+      spellEffects.filter(_.spell_id === spell_id).delete
+      spellTriggers.filter(_.spell_id === spell_id).delete
+
+      1
+    }
   }
 
   def deleteEffect(id: String): Int = {
-    /*DB.withConnection {
-      implicit conn => {
-        SQL(SpellQuery.deleteEffect).on("id" -> id.toInt).executeUpdate()
-        1
-      }
-    }*/
-    0
+    DB.withSession { implicit session =>
+      spellEffects.filter(_.id === id.toInt).delete
+      1
+    }
   }
 
   def deleteTrigger(id: String): Int = {
-    /*DB.withConnection {
-      implicit conn => {
-        SQL(SpellQuery.deleteTrigger).on("id" -> id.toInt).executeUpdate()
-        1
-      }
-    }*/
-    0
+    DB.withSession { implicit session =>
+      spellTriggers.filter(_.id === id.toInt).delete
+      1
+    }
   }
 
   /** Private */
