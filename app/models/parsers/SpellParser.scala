@@ -2,10 +2,16 @@ package models.parsers
 
 import anorm.SqlParser._
 import anorm.{RowParser, ~}
-import models.{CharClass, SpellEffect, SpellTrigger, Spell}
+import models._
 import play.api.libs.json.Json._
 import play.api.libs.json._
 import scala.collection.mutable
+import scala.Some
+import models.SpellEffect
+import models.CharClass
+import models.SpellTrigger
+import play.api.libs.json.JsObject
+import models.Spell
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,6 +23,7 @@ import scala.collection.mutable
 trait SpellParser {
 
   implicit val charClassWrites = writes[CharClass]
+  implicit val classSpell = writes[ClassSpell]
   implicit val spellTriggerWrites = writes[SpellTrigger]
   implicit val spellEffectWrites = writes[SpellEffect]
   implicit val spellWrites = writes[Spell]
@@ -174,10 +181,16 @@ trait SpellParser {
   }
 
   def jsonify(spell: Spell): JsValue = {
-    (toJson(spell).asInstanceOf[JsObject] ++ Json.obj(
+    var obj = Json.obj(
       "char_class" -> toJson(spell.charClass),
       "effects" -> toJson(spell.effects),
       "triggers" -> toJson(spell.triggers)
-    ))
+    )
+
+    if (spell.classSpell.isDefined && spell.classSpell.get.slot.isDefined) {
+      obj += "slot" -> toJson(spell.classSpell.get.slot)
+    }
+
+    (toJson(spell).asInstanceOf[JsObject] ++ obj)
   }
 }
