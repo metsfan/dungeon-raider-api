@@ -1,12 +1,11 @@
 package models.data
 
 import models.parsers.{SpellParser, NPCharacterParser}
-import play.api.db.DB
 import play.api.Play.current
-import anorm._
 import models.query.NPCharacterQuery
-import anorm.ParameterValue
 import models._
+import scala.slick.driver.PostgresDriver.simple._
+import play.api.db.slick.DB
 
 /**
  * Created by Adam on 2/10/14.
@@ -14,32 +13,35 @@ import models._
 class NPCharacterData extends BaseData with NPCharacterParser {
   val spellData = new SpellData
 
-  def getById(id: String): Option[NPCharacter] = {
-    DB.withConnection {
-      implicit conn => {
-        //val spells = SQL(NPCharacterQuery.selectSpellsById).on("id" -> id.toInt).as(charSpellRowParser *).toList
-        val spells = spellData.allForCharacterById(id)
-        val charSpells = SQL(NPCharacterQuery.selectSpellsById).on("id" -> id.toInt).as(charSpellRowParser(spells) *).toList
+  val npcharacters = TableQuery[NPCharacters]
+  val npcharacterSpells = TableQuery[NPCharacterSpells]
 
-        SQL(NPCharacterQuery.selectById).on("id" -> id.toInt).as(charRowParser(charSpells) *).headOption
-      }
+  def getById(id: String): Option[NPCharacter] = {
+    DB.withSession { implicit session =>
+      npcharacters.filter(_.id === id.toInt).firstOption
     }
   }
 
   def all(limit: Int): List[NPCharacter] = {
-    DB.withConnection {
-      implicit conn => {
-        val spells = spellData.all(1000)
-        val charSpells = SQL(NPCharacterQuery.selectSpells).as(charSpellRowParser(spells) *).toList
+    DB.withSession { implicit session =>
+      val characters = npcharacters.list
 
-        SQL(NPCharacterQuery.selectAll).as(charRowParser(charSpells) *).toList
+      val spells = spellData.all(1000)
+      val npcSpells = npcharacterSpells.list
+
+      characters foreach { character =>
+        val curSpells = npcSpells.filter(_.char_id == character.id)
+        character.spells = curSpells map { npcSpell =>
+          spells.find(_.id == npcSpell.spell_id).get
+        }
       }
+
+      characters
     }
   }
 
   def save(model: NPCharacter): Option[NPCharacter] = {
-    DB.withConnection {
-      implicit conn => {
+    DB.withSession { implicit session =>
         /*var charFields: Seq[(Any, ParameterValue[_])] = Seq(
           "name" -> model.name,
           "health" -> model.health,
@@ -80,16 +82,17 @@ class NPCharacterData extends BaseData with NPCharacterParser {
         }*/
 
         Option[NPCharacter](model)
-      }
+
     }
   }
 
   def delete(id: String): Int = {
-    DB.withConnection {
+    /*DB.withConnection {
       implicit conn => {
         SQL(NPCharacterQuery.deleteSpells).on("id" -> id).executeUpdate
         SQL(NPCharacterQuery.deleteCharacter).on("id" -> id).executeUpdate
       }
-    }
+    }*/
+    0
   }
 }

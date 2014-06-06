@@ -22,6 +22,8 @@ trait PCharacterParser {
   implicit val spellWrites = writes[Spell]
   implicit val characterWrites = writes[PCharacter]
 
+  val spellParser = new SpellParser {}
+
 //  def charRowParser: RowParser[PCharacter] = {
 //    get[Int]("id") ~
 //    get[String]("name") ~
@@ -62,7 +64,7 @@ trait PCharacterParser {
 //    PCharacter(id, user_id, name, class_id, model, health, race, level, experience)
 //  }
 
-  def jsonify(character: Option[PCharacter], spells: List[Spell]) = {
+  def jsonify(character: Option[PCharacter], spells: List[Spell]): JsValue = {
     val characterJsValue: JsObject = toJson(character).asInstanceOf[JsObject]
 
     toJson(Map(
@@ -70,19 +72,19 @@ trait PCharacterParser {
     ))
   }
 
-  def jsonify(characters: List[PCharacter]) = {
+  def jsonify(characters: List[PCharacter]): JsValue = {
     toJson(Map(
       "characters" -> toJson(characters)
     ))
   }
 
-  def jsonify(character: PCharacter) = {
+  def jsonify(character: PCharacter): JsValue = {
     toJson(Map("character" -> (toJson(character).asInstanceOf[JsObject] ++
-      Json.obj("spells" -> character.spells))
+      spellParser.jsonify(character.spells).asInstanceOf[JsObject])
     ))
   }
 
-  def jsonifyClasses(classes: List[CharClass]) = {
+  def jsonifyClasses(classes: List[CharClass]): JsValue = {
     toJson(classes)
   }
 }

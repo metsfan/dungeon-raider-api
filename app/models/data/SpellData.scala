@@ -35,7 +35,17 @@ class SpellData extends BaseData with SpellParser {
 
   def all(limit: Int): List[Spell] = {
     DB.withSession { implicit session =>
-      spells.list.take(limit)
+      val allSpells = spells.list.take(limit)
+
+      val effects = spellEffects.list
+      val triggers = spellTriggers.list
+
+      allSpells foreach { spell =>
+        spell.effects = effects.filter(_.spell_id == spell.id)
+        spell.triggers = triggers.filter(_.spell_id == spell.id)
+      }
+
+      allSpells
     }
   }
 

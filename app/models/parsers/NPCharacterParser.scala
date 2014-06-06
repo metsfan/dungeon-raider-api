@@ -29,37 +29,39 @@ trait NPCharacterParser {
   implicit val charSpellWrites = writes[NPCharacterSpell]
   implicit val charWrites = writes[NPCharacter]
 
-  def charSpellRowParser(spells: List[Spell]): RowParser[NPCharacterSpell] = {
-    get[Int]("id") ~
-    get[Int]("spell_id") ~
-    get[Int]("char_id") map {
-      case id ~ spellId ~ charId => {
-        val spell = spells.find(spell => spell.id == spellId)
-        NPCharacterSpell(id, spellId, charId, spell.get)
-      }
-    }
-  }
+  val spellParser = new SpellParser {}
 
-  def charRowParser(spells: List[NPCharacterSpell]): RowParser[NPCharacter] = {
-    get[Int]("id") ~
-    get[String]("name") ~
-    get[Int]("class_id") ~
-    get[String]("model") ~
-    get[Int]("health") ~
-    get[Int]("race") ~
-    get[Int]("level") ~
-    get[Int]("hostility") ~
-    get[Int]("faction") ~
-    get[Double]("agro_radius") map {
-      case id ~ name ~ classId ~ model ~ health ~ race ~ level ~
-        hostility ~ faction ~ agro_radius => {
-        val filteredSpells = spells.filter(spell => spell.char_id == id).map(spell => spell.data)
-        NPCharacter(id, name, health, race, level, classId, model,
-          hostility, faction, agro_radius, filteredSpells)
-      }
-    }
-  }
-
+//  def charSpellRowParser(spells: List[Spell]): RowParser[NPCharacterSpell] = {
+//    get[Int]("id") ~
+//    get[Int]("spell_id") ~
+//    get[Int]("char_id") map {
+//      case id ~ spellId ~ charId => {
+//        val spell = spells.find(spell => spell.id == spellId)
+//        NPCharacterSpell(id, spellId, charId, spell.get)
+//      }
+//    }
+//  }
+//
+//  def charRowParser(spells: List[NPCharacterSpell]): RowParser[NPCharacter] = {
+//    get[Int]("id") ~
+//    get[String]("name") ~
+//    get[Int]("class_id") ~
+//    get[String]("model") ~
+//    get[Int]("health") ~
+//    get[Int]("race") ~
+//    get[Int]("level") ~
+//    get[Int]("hostility") ~
+//    get[Int]("faction") ~
+//    get[Double]("agro_radius") map {
+//      case id ~ name ~ classId ~ model ~ health ~ race ~ level ~
+//        hostility ~ faction ~ agro_radius => {
+//        val filteredSpells = spells.filter(spell => spell.char_id == id).map(spell => spell.data)
+//        NPCharacter(id, name, health, race, level, classId, model,
+//          hostility, faction, agro_radius, filteredSpells)
+//      }
+//    }
+//  }
+//
   def charFormParser(data: JsValue, id: Int, spellData: SpellData): NPCharacter = {
     val spellsData = (data \ "spells").as[List[JsValue]]
     val spells = spellsData map(spell => {
@@ -77,14 +79,22 @@ trait NPCharacterParser {
     val faction = (data \ "faction").as[Int]
     val agro_radius = (data \ "agro_radius").as[Double]
 
-    NPCharacter(id, name, health, race, level, class_id, model, hostility, faction, agro_radius, spells.toList)
+    NPCharacter(id, name, health, race, level, class_id, model, hostility, faction, agro_radius)
   }
 
-  def jsonify(npchars: List[NPCharacter]) = {
-    toJson(npchars)
+  def jsonify(npchars: List[NPCharacter]): JsValue = {
+    toJson(Map(
+      "characters" -> npchars.map(jsonify(_))
+    ))
   }
 
-  def jsonify(npchar: Option[NPCharacter]) = {
+  def jsonify(npchar: Option[NPCharacter]): JsValue = {
     toJson(npchar)
+  }
+
+  def jsonify(npchar: NPCharacter): JsValue = {
+    toJson(npchar).asInstanceOf[JsObject] ++
+      spellParser.jsonify(npchar.spells).asInstanceOf[JsObject]
+
   }
 }
