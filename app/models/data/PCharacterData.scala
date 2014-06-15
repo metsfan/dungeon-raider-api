@@ -1,17 +1,17 @@
 package models.data
 
-import models.parsers.PCharacterParser
 import play.api.Play.current
 import models.query.PCharacterQuery
 import models.{CharClasses, PCharacters, CharClass, PCharacter}
 import scala.slick.driver.PostgresDriver.simple._
 import play.api.db.slick.DB
 import java.util.UUID
+import lib.json.PCharacterParser
 
 /**
  * Created by Adam on 2/10/14.
  */
-class PCharacterData extends BaseData with PCharacterParser {
+class PCharacterData extends BaseData {
   val pcharacters = TableQuery[PCharacters]
   val classes = TableQuery[CharClasses]
 

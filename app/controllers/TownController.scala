@@ -2,8 +2,8 @@ package controllers
 
 import models.data.TownData
 import play.api.mvc.Action
-import models.parsers.TownParser
 import java.util.UUID
+import lib.json.TownParser
 
 /**
  * Created by Adam on 6/1/14.

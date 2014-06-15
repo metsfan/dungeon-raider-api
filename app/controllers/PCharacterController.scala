@@ -1,21 +1,23 @@
 package controllers
 
-import models.parsers.PCharacterParser
 import models.data.{SpellData, PCharacterData}
 import play.api.mvc.Action
 import models.{Spell}
 import java.util.UUID
+import lib.json.PCharacterParser
 
 /**
  * Created by Adam on 2/10/14.
  */
-object PCharacterController extends BaseController with PCharacterParser {
+object PCharacterController extends BaseController {
 
   val characterData = new PCharacterData
   val spellData = new SpellData
 
+  val parser = new PCharacterParser
+
   def list(user_id: UUID) = Action {
-    Ok(jsonify(characterData.all(user_id))).as("application/json")
+    Ok(parser.toJsonArray(characterData.all(user_id))).as("application/json")
   }
 
   def get(id: UUID) = Action {
@@ -26,10 +28,10 @@ object PCharacterController extends BaseController with PCharacterParser {
       character.get.spells = globalSpells ++ classSpells
     }
 
-    Ok(jsonify(character.get)).as("application/json")
+    Ok(parser.toJsonObject(character.get)).as("application/json")
   }
 
   def classList = Action {
-    Ok(jsonifyClasses(characterData.allClasses)).as("application/json")
+    Ok(parser.jsonifyClasses(characterData.allClasses)).as("application/json")
   }
 }

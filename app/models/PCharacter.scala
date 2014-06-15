@@ -2,9 +2,11 @@ package models
 
 import java.util.UUID
 import scala.slick.driver.PostgresDriver.simple._
+import lib.Global
 
-case class PCharacter(var id: UUID, user_id: UUID, name: String, class_id: Int, model: String, health: Int,
-                      race: Int, level: Int, experience: Int) {
+case class PCharacter(var id: UUID = Global.UUIDZero, user_id: UUID = Global.UUIDZero, name: String = "",
+                      class_id: Int = 0, model: String = "", health: Int = 0, race: Int = 0, level: Int = 0,
+                      experience: Int = 0) {
   var spells: List[Spell] = List[Spell]()
 }
 

@@ -1,27 +1,32 @@
 package controllers
 
 import play.api.libs.json.Json._
-import models.parsers.SpellParser
 import models.data.SpellData
 import play.api.mvc.Action
 import play.api.libs.json.JsValue
+import java.util.UUID
+import lib.json.SpellParser
+import models.Spell
 
-object SpellController extends BaseController with SpellParser {
+object SpellController extends BaseController {
   val spellData = new SpellData()
+  val parser = new SpellParser
 
   def list = Action {
-    Ok(jsonify(spellData.all(200))).as("application/json")
+    Ok(parser.toJsonArray(spellData.all(200))).as("application/json")
   }
 
   def listByClass(classId: Int) = Action {
-    Ok(jsonify(spellData.allForClass(classId))).as("application/json")
+    Ok(parser.toJsonArray(spellData.allForClass(classId))).as("application/json")
   }
 
-  def get(id: String) = Action {
-    Ok(jsonify(spellData.getById(id).get)).as("application/json")
+  def get(id: UUID) = Action {
+    Ok(parser.toJsonObject(spellData.getById(id).get)).as("application/json")
   }
 
-  def save(id: String) = Action {
+  def create() = save(null)
+
+  def save(id: UUID) = Action {
     implicit request => {
 
       val body = parseRequestJSON(request)
@@ -32,14 +37,15 @@ object SpellController extends BaseController with SpellParser {
 
       if (body != null) {
         try {
-          val saved = spellData.save(spellFormParser(body, id.toInt))
+          val original = spellData.getById(id)
+          val saved = spellData.save(parser.toObject(original, body).get)
           if (saved.isDefined) {
             val classData = (body \ "char_class").asOpt[JsValue]
             if (classData.isDefined) {
-              val isNew = id.toInt == 0
+              val isNew = id == null
               spellData.saveForClass(saved.get, classData.get, isNew)
             }
-            result = toJson(saved).toString
+            result = parser.toJsonObject(saved.get).toString
             success = true
           }
         } catch {
@@ -73,22 +79,22 @@ object SpellController extends BaseController with SpellParser {
     val body = parseRequestJSON(request)
 
     if (body != null) {
-      spellData.saveSlots(classId, body)
+      spellData.saveSlots(classId.toInt, body)
     }
     Ok("")
   }
 
-  def delete(id: String) = Action {
+  def delete(id: UUID) = Action {
     val result = spellData.delete(id)
     Ok(toJson(Map("result" -> result))).as("application/json")
   }
 
-  def deleteEffect(id: String) = Action {
+  def deleteEffect(id: UUID) = Action {
     val result = spellData.deleteEffect(id)
     Ok(toJson(Map("result" -> result))).as("application/json")
   }
 
-  def deleteTrigger(id: String) = Action {
+  def deleteTrigger(id: UUID) = Action {
     val result = spellData.deleteTrigger(id)
     Ok(toJson(Map("result" -> result))).as("application/json")
   }

@@ -1,10 +1,11 @@
 package controllers
 
 import play.api.mvc._
-import models.parsers.NPCharacterParser
 import models.data.{SpellData, NPCharacterData}
 import play.api.libs.json.Json._
-import java.util.NoSuchElementException
+import java.util.{UUID, NoSuchElementException}
+import models.NPCharacter
+import lib.json.{NPCharacterParser, JsonObjectParser}
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,19 +14,24 @@ import java.util.NoSuchElementException
  * Time: 11:01 PM
  * To change this template use File | Settings | File Templates.
  */
-object NPCharacterController extends BaseController with NPCharacterParser {
+object NPCharacterController extends BaseController {
   val characterData = new NPCharacterData
   val spellData = new SpellData
 
+  implicit val objWrites = writes[NPCharacter]
+  implicit val objReads = reads[NPCharacter]
+
+  val parser = new NPCharacterParser
+
   def list = Action {
-    Ok(jsonify(characterData.all(200))).as("application/json")
+    Ok(parser.toJsonArray(characterData.all(200))).as("application/json")
   }
 
-  def get(id: String) = Action {
-    Ok(jsonify(characterData.getById(id))).as("application/json")
+  def get(id: UUID) = Action {
+    Ok(parser.toJsonObject(characterData.getById(id).get)).as("application/json")
   }
 
-  def save(id: String) = Action {
+  def save(id: UUID) = Action {
     implicit request => {
       val body = parseRequestJSON(request)
       var error = "An unknown error occured."
@@ -35,9 +41,11 @@ object NPCharacterController extends BaseController with NPCharacterParser {
 
       if (body != null) {
         try {
-          val saved = characterData.save(charFormParser(body, id.toInt, spellData))
-          if (saved.isDefined) {
-            result = toJson(saved).toString
+          val original = characterData.getById(id)
+          val obj = parser.toObject(original, body)
+          //val saved = characterData.save(charFormParser(body, id, spellData, character))
+          if (obj.isSuccess) {
+            result = toJson(obj.get).toString
             success = true
           }
         } catch {
@@ -67,7 +75,7 @@ object NPCharacterController extends BaseController with NPCharacterParser {
     }
   }
 
-  def delete(id: String) = Action {
+  def delete(id: UUID) = Action {
     val result = characterData.delete(id)
     Ok(toJson(Map("result" -> result))).as("application/json")
   }

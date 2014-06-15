@@ -1,32 +1,31 @@
 package models.data
 
 import play.api.Play.current
-import models.query.SpellQuery
 import scala.slick.driver.PostgresDriver.simple._
 import play.api.db.slick.DB
-import java.sql.Connection
 import models._
-import models.parsers.SpellParser
-import play.api.libs.json.{JsArray, JsValue}
 import java.util.UUID
+import lib.Global
+import play.api.libs.json.Json._
+import play.api.libs.json._
 
 /**
  * Created by Adam on 2/10/14.
  */
-class SpellData extends BaseData with SpellParser {
+class SpellData extends BaseData {
   val spells = TableQuery[Spells]
   val spellEffects = TableQuery[SpellEffects]
   val spellTriggers = TableQuery[SpellTriggers]
   val classSpells = TableQuery[ClassSpells]
   val charClasses = TableQuery[CharClasses]
 
-  def getById(id: String): Option[Spell] = {
+  def getById(id: UUID): Option[Spell] = {
     DB.withSession { implicit session =>
-      val spell = spells.filter(_.id === id.toInt).firstOption
+      val spell = spells.filter(_.id === id).firstOption
 
       if (spell.isDefined) {
-        spell.get.effects = spellEffects.filter(_.spell_id === id.toInt).list
-        spell.get.triggers = spellTriggers.filter(_.spell_id === id.toInt).list
+        spell.get.effects = spellEffects.filter(_.spell_id === id).list
+        spell.get.triggers = spellTriggers.filter(_.spell_id === id).list
       }
 
       spell
@@ -95,97 +94,37 @@ class SpellData extends BaseData with SpellParser {
 
   def save(model: Spell): Option[Spell] = {
     DB.withSession { implicit session =>
-      if (model.id == null) {
+      if (model.id == Global.UUIDZero) {
+        model.id = UUID.randomUUID()
         spells.insert(model)
+
+        classSpells.insert(ClassSpell(UUID.randomUUID(), model.id, model.class_id))
       } else {
-        spells.update(model)
+        spells.filter(_.id === model.id).update(model)
+      }
+
+      model.effects foreach { effect =>
+        if (effect.id == Global.UUIDZero) {
+          effect.id = UUID.randomUUID()
+          effect.spell_id = model.id
+          spellEffects.insert(effect)
+        } else {
+          spellEffects.filter(_.id === effect.id).update(effect)
+        }
+      }
+
+      model.triggers foreach { trigger =>
+        if (trigger.id == Global.UUIDZero) {
+          trigger.id = UUID.randomUUID()
+          trigger.spell_id = model.id
+          spellTriggers.insert(trigger)
+        } else {
+          spellTriggers.filter(_.id === trigger.id).update(trigger)
+        }
       }
 
       Option[Spell](model)
     }
-    /*DB.withConnection {
-      implicit conn => {
-        var spellFields: Seq[(Any, ParameterValue[_])] = Seq(
-          "name" -> model.name,
-          "cast_time" -> model.cast_time,
-          "cooldown" -> model.cooldown,
-          "spell_type" -> model.spell_type,
-          "cast_type" -> model.cast_type,
-          "radius" -> model.radius,
-          "range" -> model.range,
-          "shape" -> model.shape,
-          "self_cast" -> model.self_cast,
-          "class_id" -> (if(model.char_class.isDefined) model.char_class.get.id else 0),
-          "icon_url" -> model.icon_url
-        )
-
-        if (model.id > 0) {
-          spellFields ++= Seq[(Any, ParameterValue[_])]("spell_id" -> model.id)
-          SQL(SpellQuery.updateSpell).on(spellFields: _*).executeUpdate()
-        } else {
-          SQL(SpellQuery.insertSpell).on(spellFields: _*).executeInsert().map {
-            id => model.id = id.toInt
-          }
-        }
-
-        model.effects.foreach(effect => {
-          if(effect.spell_id == 0) {
-            effect.spell_id = model.id
-          }
-
-          var effectFields: Seq[(Any, ParameterValue[_])] = Seq(
-            "spell_id" -> effect.spell_id,
-            "effect_type" -> effect.effect_type,
-            "damage_source" -> effect.damage_source,
-            "buff_source" -> effect.buff_source,
-            "percent_source_min" -> effect.percent_source_min,
-            "percent_source_max" -> effect.percent_source_max,
-            "flat_amount_min" -> effect.flat_amount_min,
-            "flat_amount_max" -> effect.flat_amount_max,
-            "dot_tick" -> effect.dot_tick,
-            "dot_duration" -> effect.dot_duration,
-            "buff_duration" -> effect.buff_duration,
-            "mechanic" -> effect.mechanic,
-            "school" -> effect.school,
-            "script_name" -> effect.script_name,
-            "script_arguments" -> effect.script_arguments,
-            "delta" -> effect.delta,
-            "max_stacks" -> effect.max_stacks
-          )
-          if (effect.id > 0) {
-            effectFields ++= Seq[(Any, ParameterValue[_])]("effect_id" -> effect.id)
-            SQL(SpellQuery.updateSpellEffect).on(effectFields: _*).executeUpdate()
-          } else {
-            SQL(SpellQuery.insertSpellEffect).on(effectFields: _*).executeInsert().map({
-              id => effect.id = id.toInt
-            })
-          }
-        })
-
-        model.triggers.foreach(trigger => {
-          if(trigger.spell_id == 0) {
-            trigger.spell_id = model.id
-          }
-
-          var triggerFields: Seq[(Any, ParameterValue[_])] = Seq(
-            "spell_id" -> trigger.spell_id,
-            "trigger_spell_id" -> trigger.trigger_spell_id,
-            "chance" -> trigger.chance,
-            "trigger_type" -> trigger.trigger_type
-          )
-          if (trigger.id > 0) {
-            triggerFields ++= Seq[(Any, ParameterValue[_])]("trigger_id" -> trigger.id)
-            SQL(SpellQuery.updateSpellTrigger).on(triggerFields: _*).executeUpdate()
-          } else {
-            SQL(SpellQuery.insertSpellTrigger).on(triggerFields: _*).executeInsert().map({
-              id => trigger.id = id.toInt
-            })
-          }
-        })
-
-        Option[Spell](model)
-      }
-    }*/
   }
 
   def saveForClass(spell: Spell, classData: JsValue, isNew: Boolean) {
@@ -205,71 +144,41 @@ class SpellData extends BaseData with SpellParser {
     }*/
   }
 
-  def saveSlots(classId: String, data: JsValue) {
-    /*DB.withConnection { implicit conn =>
-      val spells = data.as[List[JsValue]]
+  def saveSlots(classId: Int, data: JsValue) {
+    DB.withSession { implicit session =>
+      data.as[List[JsValue]].foreach { spell =>
+        val spellId = (spell \ "spell_id").as[UUID]
+        val slot = (spell \ "slot").asOpt[String]
 
-      spells.foreach { spell =>
-        val spellId = (spell \ "spell_id").as[Int]
-        val slot = (spell \ "slot").as[String]
-
-        SQL(SpellQuery.updateSpellSlot).on(
-          "spell_id" -> spellId,
-          "class_id" -> classId.toInt,
-          "slot" -> slot
-        ).executeUpdate
+        val c = classSpells.filter(_.spell_id === spellId).first
+        classSpells.filter(_.spell_id === spellId).update(ClassSpell(c.id, c.spell_id, c.class_id, slot))
       }
-
-      val updateSql = SQL(SpellQuery.updateSpellSlot)
-      val updateStmt = (updateSql.asBatch /: params) (
-        (sql, elem) => sql.addBatchParams(elem)
-      )
-
-      updateStmt.execute
-    }*/
+    }
   }
 
-  def delete(id: String): Int = {
-    val spell_id = id.toInt;
+  def delete(id: UUID): Int = {
+    val spell_id = id
 
     DB.withSession { implicit session =>
       spells.filter(_.id === spell_id).delete
       spellEffects.filter(_.spell_id === spell_id).delete
       spellTriggers.filter(_.spell_id === spell_id).delete
-
+      classSpells.filter(_.spell_id === id).delete
       1
     }
   }
 
-  def deleteEffect(id: String): Int = {
+  def deleteEffect(id: UUID): Int = {
     DB.withSession { implicit session =>
-      spellEffects.filter(_.id === id.toInt).delete
+      spellEffects.filter(_.id === id).delete
       1
     }
   }
 
-  def deleteTrigger(id: String): Int = {
+  def deleteTrigger(id: UUID): Int = {
     DB.withSession { implicit session =>
-      spellTriggers.filter(_.id === id.toInt).delete
+      spellTriggers.filter(_.id === id).delete
       1
     }
   }
-
-  /** Private */
-
-  /*def getAllEffects(implicit conn: Connection): List[SpellEffect] = {
-    SQL(SpellQuery.selectAllEffects).as(spellEffectRowParser *).toList
-  }
-
-  def getAllTriggers(implicit conn: Connection): List[SpellTrigger] = {
-    SQL(SpellQuery.selectAllTriggers).as(spellTriggerRowParser *).toList
-  }
-
-  def getEffectsForSpell(implicit conn: Connection, spellId: String): List[SpellEffect] = {
-    SQL(SpellQuery.selectEffectsForSpell).on("spellId" -> spellId.toInt).as(spellEffectRowParser *).toList
-  }
-
-  def getTriggersForSpell(implicit conn: Connection, spellId: String): List[SpellTrigger] = {
-    SQL(SpellQuery.selectTriggersForSpell).on("spellId" -> spellId.toInt).as(spellTriggerRowParser *).toList
-  }*/
 }

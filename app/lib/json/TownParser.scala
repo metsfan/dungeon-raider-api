@@ -1,9 +1,8 @@
-package models.parsers
+package lib.json
 
 import play.api.libs.json.Json._
 import models._
-import anorm.{~, RowParser}
-import anorm.SqlParser._
+import anorm.RowParser
 import anorm.~
 import models.Town
 import play.api.libs.json.JsValue

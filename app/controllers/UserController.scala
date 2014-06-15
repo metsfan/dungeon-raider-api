@@ -1,12 +1,12 @@
 package controllers
 
 import play.api.mvc.Action
-import models.parsers.UserParser
 import models.data.{TownData, UserData}
 import play.api.libs.json.Json._
 import models.{UserProfile, User}
 import scala.slick.lifted.TableQuery
 import java.util.UUID
+import lib.json.UserParser
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,16 +15,18 @@ import java.util.UUID
  * Time: 9:07 AM
  * To change this template use File | Settings | File Templates.
  */
-object UserController extends BaseController with UserParser {
+object UserController extends BaseController {
   val userData = new UserData
   val townData = new TownData
+
+  val parser = new UserParser
 
   def register() = Action {
     implicit request => {
       val formData = request.body.asFormUrlEncoded
       val result = if (formData.isDefined) {
-        val user = userData.save(registerFormParser(formData.get))
-        jsonify(user.profile)
+        val user = userData.save(parser.registerFormParser(formData.get))
+        parser.toJsonObject(user.profile)
       } else {
         toJson(Map(
           "success" -> false
@@ -39,9 +41,9 @@ object UserController extends BaseController with UserParser {
     implicit request => {
       val formData = request.body.asFormUrlEncoded
       val result = if(formData.isDefined) {
-        val user = userData.login(loginFormParser(formData.get))
+        val user = userData.login(parser.loginFormParser(formData.get))
         if (user.isDefined) {
-          jsonify(user.get.profile)
+          parser.toJsonObject(user.get.profile)
         } else {
           toJson(Map(
             "success" -> false
@@ -61,7 +63,7 @@ object UserController extends BaseController with UserParser {
     val user = userData.getById(id)
 
     val result = if (user.isDefined) {
-      jsonify(user.get.profile)
+      parser.toJsonObject(user.get.profile)
     } else {
       toJson(Map(
         "success" -> false

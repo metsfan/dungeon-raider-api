@@ -3,8 +3,12 @@ package models
 import java.util.UUID
 import scala.slick.driver.PostgresDriver.simple._
 
-case class Town(id: UUID, name: String, map: String, zone: Int)
-case class _UserTown(id: UUID, user_id: UUID, town_id: UUID, rank: Int, is_default: Boolean, leader: Boolean)
+case class Town(id: UUID = null, name: String = "", map: String = "", zone: Int = 0) {
+  var is_default: Boolean = false
+  var leader: Boolean = false
+}
+case class _UserTown(id: UUID = null, user_id: UUID = null, town_id: UUID = null,
+                     rank: Int = 0, is_default: Boolean = false, leader: Boolean = false)
 
 case class UserTown(id: UUID, name: String, map: String, zone: Int, rank: Int, is_default: Boolean, leader: Boolean)
 

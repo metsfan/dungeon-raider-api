@@ -1,6 +1,5 @@
 package models.data
 
-import models.parsers.TownParser
 import models._
 import models.query.TownQuery
 import play.api.Play.current
@@ -9,6 +8,7 @@ import play.api.db.slick.DB
 import java.util.UUID
 import models.UserTown
 import models.Town
+import lib.json.TownParser
 
 /**
  * Created by Adam on 6/1/14.

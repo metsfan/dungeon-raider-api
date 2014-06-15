@@ -7,16 +7,16 @@ package models
 import java.util.UUID
 import scala.slick.driver.PostgresDriver.simple._
 
-case class NPCharacter(var id: Int, name: String, health: Int, race: Int, level: Int,
-                       class_id: Int, model: String, hostility: Int,
-                       faction: Int, agro_radius: Double) {
+case class NPCharacter(var id: UUID = null, name: String = "", health: Int = 0, race: Int = 0,
+                       level: Int = 0, class_id: Int = 0, model: String = "", hostility: Int = 0,
+                       faction: Int = 0, agro_radius: Double = 0.0) {
   var spells: List[Spell] = List[Spell]()
 }
 
-case class NPCharacterSpell(var id: Int, spell_id: Int, char_id: Int)
+case class NPCharacterSpell(var id: UUID = null, spell_id: UUID = null, char_id: UUID = null)
 
 class NPCharacters(tag: Tag) extends Table[NPCharacter](tag, Some("public"), "npcharacter") {
-  def id = column[Int]("id", O.PrimaryKey)
+  def id = column[UUID]("id", O.PrimaryKey)
   def name = column[String]("name")
   def health = column[Int]("health")
   def race = column[Int]("race")
@@ -32,9 +32,9 @@ class NPCharacters(tag: Tag) extends Table[NPCharacter](tag, Some("public"), "np
 }
 
 class NPCharacterSpells(tag: Tag) extends Table[NPCharacterSpell](tag, Some("public"), "npcharacter_spell") {
-  def id = column[Int]("id", O.PrimaryKey)
-  def spell_id = column[Int]("spell_id")
-  def char_id = column[Int]("spell_id")
+  def id = column[UUID]("id", O.PrimaryKey)
+  def spell_id = column[UUID]("spell_id")
+  def char_id = column[UUID]("spell_id")
 
   def * = (id, spell_id, char_id) <> (NPCharacterSpell.tupled, NPCharacterSpell.unapply)
 }

@@ -10,13 +10,14 @@ GET           /user/:id                    controllers.UserController.get(id: ja
 
 # Spells
 GET           /spells                       controllers.SpellController.list
-GET           /spell/:id                    controllers.SpellController.get(id)
-PUT           /spell/:id                    controllers.SpellController.save(id)
-DELETE        /spell/:id                    controllers.SpellController.delete(id)
+GET           /spell/:id                    controllers.SpellController.get(id: java.util.UUID)
+PUT           /spell/:id                    controllers.SpellController.save(id: java.util.UUID)
+POST          /spell                        controllers.SpellController.create
+DELETE        /spell/:id                    controllers.SpellController.delete(id: java.util.UUID)
 GET           /spells/:classId              controllers.SpellController.listByClass(classId: Int)
 PUT           /spells/:classId/slots        controllers.SpellController.saveSlots(classId)
-DELETE        /spell/effect/:id             controllers.SpellController.deleteEffect(id)
-DELETE        /spell/trigger/:id            controllers.SpellController.deleteTrigger(id)
+DELETE        /spell/effect/:id             controllers.SpellController.deleteEffect(id: java.util.UUID)
+DELETE        /spell/trigger/:id            controllers.SpellController.deleteTrigger(id: java.util.UUID)
 
 # Towns
 GET           /town/:id                     controllers.TownController.get(id: java.util.UUID)
@@ -27,9 +28,9 @@ GET           /classes                      controllers.PCharacterController.cla
 
 # Non-player Characters
 GET           /npcharacters                 controllers.NPCharacterController.list
-GET           /npcharacter/:id              controllers.NPCharacterController.get(id)
-POST          /npcharacter/:id              controllers.NPCharacterController.save(id)
-DELETE        /npcharacter/:id              controllers.NPCharacterController.delete(id)
+GET           /npcharacter/:id              controllers.NPCharacterController.get(id: java.util.UUID)
+POST          /npcharacter/:id              controllers.NPCharacterController.save(id: java.util.UUID)
+DELETE        /npcharacter/:id              controllers.NPCharacterController.delete(id: java.util.UUID)
 
 # Player Characters
 

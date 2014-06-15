@@ -1,24 +1,29 @@
 package models.data
 
-import models.parsers.{SpellParser, NPCharacterParser}
 import play.api.Play.current
 import models.query.NPCharacterQuery
 import models._
 import scala.slick.driver.PostgresDriver.simple._
 import play.api.db.slick.DB
+import java.util.UUID
+import lib.json.NPCharacterParser
 
 /**
  * Created by Adam on 2/10/14.
  */
-class NPCharacterData extends BaseData with NPCharacterParser {
+class NPCharacterData extends BaseData {
   val spellData = new SpellData
 
   val npcharacters = TableQuery[NPCharacters]
   val npcharacterSpells = TableQuery[NPCharacterSpells]
 
-  def getById(id: String): Option[NPCharacter] = {
-    DB.withSession { implicit session =>
-      npcharacters.filter(_.id === id.toInt).firstOption
+  def getById(id: UUID): Option[NPCharacter] = {
+    if (id != null) {
+      DB.withSession { implicit session =>
+        npcharacters.filter(_.id === id).firstOption
+      }
+    } else {
+      None
     }
   }
 
@@ -42,6 +47,11 @@ class NPCharacterData extends BaseData with NPCharacterParser {
 
   def save(model: NPCharacter): Option[NPCharacter] = {
     DB.withSession { implicit session =>
+      if (model.id == null) {
+        npcharacters.insert(model)
+      } else {
+        npcharacters.filter(_.id === model.id).update(model)
+      }
         /*var charFields: Seq[(Any, ParameterValue[_])] = Seq(
           "name" -> model.name,
           "health" -> model.health,
@@ -86,7 +96,7 @@ class NPCharacterData extends BaseData with NPCharacterParser {
     }
   }
 
-  def delete(id: String): Int = {
+  def delete(id: UUID): Int = {
     /*DB.withConnection {
       implicit conn => {
         SQL(NPCharacterQuery.deleteSpells).on("id" -> id).executeUpdate

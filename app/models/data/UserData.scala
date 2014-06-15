@@ -1,6 +1,5 @@
 package models.data
 
-import models.parsers.UserParser
 import models.{Users, UserProfile, UserAuth, User}
 import java.util.UUID
 import models.query.UserQuery
@@ -12,7 +11,7 @@ import play.api.db.slick.DB
 /**
  * Created by Adam on 5/25/14.
  */
-class UserData extends BaseData with UserParser {
+class UserData extends BaseData {
   val users = TableQuery[Users]
 
   def getById(id: UUID): Option[User] = {
