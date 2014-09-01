@@ -1,12 +1,10 @@
 package models.data
 
 import play.api.Play.current
-import models.query.NPCharacterQuery
 import models._
 import scala.slick.driver.PostgresDriver.simple._
 import play.api.db.slick.DB
 import java.util.UUID
-import lib.json.NPCharacterParser
 
 /**
  * Created by Adam on 2/10/14.

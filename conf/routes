@@ -37,6 +37,14 @@ DELETE        /npcharacter/:id              controllers.NPCharacterController.de
 GET           /pcharacters/:user_id         controllers.PCharacterController.list(user_id: java.util.UUID)
 GET           /pcharacter/:id               controllers.PCharacterController.get(id: java.util.UUID)
 
+# Friends
+GET           /friends/:user_id             controllers.FriendController.list(user_id: java.util.UUID)
+PUT           /friends/:user_id/request     controllers.FriendController.request(user_id: java.util.UUID)
+POST          /friends/:user_id/response    controllers.FriendController.response(user_id: java.util.UUID)
+DELETE        /friends/:user_id             controllers.FriendController.delete(user_id: java.util.UUID)
+GET           /friends/:user_id/pending     controllers.FriendController.pendingFriendRequests(user_id: java.util.UUID)
+
+
 # Uploading
 
 POST          /upload/image                 controllers.UploadController.imageUpload

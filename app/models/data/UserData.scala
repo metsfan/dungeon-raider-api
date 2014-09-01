@@ -22,7 +22,7 @@ class UserData extends BaseData {
 
   def getByUsername(username: String): Option[User] = {
     DB.withSession { implicit session =>
-      users.filter(_.username === username).firstOption
+      users.filter(_.username.toLowerCase === username.toLowerCase).firstOption
     }
   }
 
