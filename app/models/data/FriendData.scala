@@ -13,10 +13,14 @@ import play.api.Logger
 
 class FriendData extends BaseData {
   val friends = TableQuery[Friends]
+  val users = TableQuery[Users]
 
-  def allForUser(id: UUID, status: Int = FriendStatus.Accepted.id): List[Friend] = {
+  def allForUser(id: UUID, status: Int = FriendStatus.Accepted.id): List[User] = {
     DB.withSession { implicit session =>
-      friends.filter(f => (f.user1 === id || f.user2 === id) && f.status === status).list
+      (for {
+        f <- friends if f.user1 === id && f.status === status
+        u <- users if f.user2 === u.id
+      } yield u).list
     }
   }
 
@@ -26,7 +30,7 @@ class FriendData extends BaseData {
         friend.id = UUID.randomUUID()
         friends.insert(friend)
       } else {
-        friends.update(friend)
+        friends.filter(_.id === friend.id).update(friend)
       }
 
       Some(friend)
@@ -36,8 +40,7 @@ class FriendData extends BaseData {
   def get(user1: UUID, user2: UUID): Option[Friend] = {
     DB.withSession { implicit session =>
       val query = friends.filter(f => {
-        ((f.user1 === user1 && f.user2 === user2) ||
-            (f.user1 === user2 && f.user2 === user1))
+        f.user1 === user1 && f.user2 === user2
       })
 
       query.list.headOption
@@ -50,6 +53,12 @@ class FriendData extends BaseData {
         ((f.user1 === user1 && f.user2 === user2) ||
           (f.user1 === user2 && f.user2 === user1))
       }).delete
+    }
+  }
+
+  def delete(id: UUID): Int = {
+    DB.withSession { implicit session =>
+      friends.filter(_.id === id).delete
     }
   }
 }

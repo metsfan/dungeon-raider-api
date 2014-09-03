@@ -3,7 +3,7 @@ package controllers
 import play.api.mvc._
 import java.util.UUID
 import models.data.{UserData, FriendData}
-import lib.json.FriendParser
+import lib.json.{UserParser, FriendParser}
 import models.{Friend, FriendStatus}
 import play.api.libs.json.Json
 
@@ -15,13 +15,18 @@ object FriendController extends Controller {
   val userData = new UserData
 
   val friendParser = new FriendParser
+  val userParser = new UserParser
 
   def list(user_id: UUID) = Action {
-    Ok(friendParser.toJsonArray(friendData.allForUser(user_id))).as("application/json")
+    Ok(userParser.toJsonArrayProfile(
+      friendData.allForUser(user_id, FriendStatus.Accepted.id).map(_.profile))
+    ).as("application/json")
   }
 
   def pendingFriendRequests(user_id: UUID) = Action {
-    Ok(friendParser.toJsonArray(friendData.allForUser(user_id, FriendStatus.Pending.id)))
+    Ok(userParser.toJsonArrayProfile(
+      friendData.allForUser(user_id, FriendStatus.Pending.id).map(_.profile))
+    ).as("application/json")
   }
 
   def request(user_id: UUID) = Action { implicit request =>
@@ -32,8 +37,13 @@ object FriendController extends Controller {
           val requestedUser = userData.getByUsername(requestedName.get(0))
           if (requestedUser.isDefined) {
             if (!friendData.get(user_id, requestedUser.get.id).isDefined) {
-              val friend = Friend(null, user_id, requestedUser.get.id, FriendStatus.Pending.id)
-              Ok(friendParser.toJsonObject(friendData.save(friend).get))
+              val friend1 = Friend(null, user_id, requestedUser.get.id, FriendStatus.Pending.id)
+              friendParser.toJsonObject(friendData.save(friend1).get)
+
+              val friend2 = Friend(null, requestedUser.get.id, user_id, FriendStatus.Pending.id)
+              friendParser.toJsonObject(friendData.save(friend2).get)
+
+              Ok(Json.obj("success" -> true))
             } else {
               BadRequest
             }
@@ -56,19 +66,26 @@ object FriendController extends Controller {
           val requesterUser = userData.getById(UUID.fromString(requesterId.get(0)))
           if (requesterUser.isDefined) {
             val action = data.get("action").get(0)
-            val friend = friendData.get(user_id, requesterUser.get.id)
-            if (friend.isDefined) {
+
+            val friend1 = friendData.get(user_id, requesterUser.get.id)
+            val friend2 = friendData.get(requesterUser.get.id, user_id)
+
+            if (friend1.isDefined && friend2.isDefined) {
               action match {
                 case "accept" => {
-                  friend.get.status = FriendStatus.Accepted.id
-                  friendData.save(friend.get)
+                  friend1.get.status = FriendStatus.Accepted.id
+                  friendData.save(friend1.get)
+
+                  friend2.get.status = FriendStatus.Accepted.id
+                  friendData.save(friend2.get)
                 }
                 case "reject" => {
-                  friendData.delete(friend.get.user1, friend.get.user2)
+                  friendData.delete(friend1.get.id)
+                  friendData.delete(friend2.get.id)
                 }
               }
 
-              Ok(friendParser.toJsonObject(friendData.save(friend.get).get))
+              Ok(Json.obj("success" -> true))
             } else {
               BadRequest
             }
