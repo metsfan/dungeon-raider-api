@@ -19,5 +19,7 @@ libraryDependencies ++= Seq(
   "org.slf4j" % "slf4j-nop" % "1.6.4",
   "com.github.t3hnar" % "scala-bcrypt_2.10" % "2.3",
   "com.typesafe.slick" % "slick_2.10" % "2.1.0-M2",
-  "com.typesafe.play" % "play-slick_2.10" % "0.6.0.1"
+  "com.typesafe.play" % "play-slick_2.10" % "0.6.0.1",
+  "com.rabbitmq" % "amqp-client" % "3.3.5",
+  "commons-io" % "commons-io" % "2.4"
 )

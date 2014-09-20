@@ -3,55 +3,55 @@
 # ~~~~
 
 # User
-POST          /user/register                controllers.UserController.register()
-POST          /user/login                   controllers.UserController.login()
-GET           /user/:id                    controllers.UserController.get(id: java.util.UUID)
-#POST          /user/:id                    controllers.UserController.save(id)
+POST          /user/register                com.aeskreis.dungeonraider.controllers.UserController.register()
+POST          /user/login                   com.aeskreis.dungeonraider.controllers.UserController.login()
+GET           /user/:id                     com.aeskreis.dungeonraider.controllers.UserController.get(id: java.util.UUID)
+#POST          /user/:id                    com.aeskreis.dungeonraider.controllers.UserController.save(id)
 
 # Spells
-GET           /spells                       controllers.SpellController.list
-GET           /spell/:id                    controllers.SpellController.get(id: java.util.UUID)
-PUT           /spell/:id                    controllers.SpellController.save(id: java.util.UUID)
-POST          /spell                        controllers.SpellController.create
-DELETE        /spell/:id                    controllers.SpellController.delete(id: java.util.UUID)
-GET           /spells/:classId              controllers.SpellController.listByClass(classId: Int)
-PUT           /spells/:classId/slots        controllers.SpellController.saveSlots(classId)
-DELETE        /spell/effect/:id             controllers.SpellController.deleteEffect(id: java.util.UUID)
-DELETE        /spell/trigger/:id            controllers.SpellController.deleteTrigger(id: java.util.UUID)
+GET           /spells                       com.aeskreis.dungeonraider.controllers.SpellController.list
+GET           /spell/:id                    com.aeskreis.dungeonraider.controllers.SpellController.get(id: java.util.UUID)
+PUT           /spell/:id                    com.aeskreis.dungeonraider.controllers.SpellController.save(id: java.util.UUID)
+POST          /spell                        com.aeskreis.dungeonraider.controllers.SpellController.create
+DELETE        /spell/:id                    com.aeskreis.dungeonraider.controllers.SpellController.delete(id: java.util.UUID)
+GET           /spells/:classId              com.aeskreis.dungeonraider.controllers.SpellController.listByClass(classId: Int)
+PUT           /spells/:classId/slots        com.aeskreis.dungeonraider.controllers.SpellController.saveSlots(classId)
+DELETE        /spell/effect/:id             com.aeskreis.dungeonraider.controllers.SpellController.deleteEffect(id: java.util.UUID)
+DELETE        /spell/trigger/:id            com.aeskreis.dungeonraider.controllers.SpellController.deleteTrigger(id: java.util.UUID)
 
 # Towns
-GET           /town/:id                     controllers.TownController.get(id: java.util.UUID)
-GET           /towns/user/:user_id          controllers.TownController.getForUser(user_id: java.util.UUID)
+GET           /town/:id                     com.aeskreis.dungeonraider.controllers.TownController.get(id: java.util.UUID)
+GET           /towns/user/:user_id          com.aeskreis.dungeonraider.controllers.TownController.getForUser(user_id: java.util.UUID)
 
 # Classes
-GET           /classes                      controllers.PCharacterController.classList
+GET           /classes                      com.aeskreis.dungeonraider.controllers.PCharacterController.classList
 
 # Non-player Characters
-GET           /npcharacters                 controllers.NPCharacterController.list
-GET           /npcharacter/:id              controllers.NPCharacterController.get(id: java.util.UUID)
-POST          /npcharacter/:id              controllers.NPCharacterController.save(id: java.util.UUID)
-DELETE        /npcharacter/:id              controllers.NPCharacterController.delete(id: java.util.UUID)
+GET           /npcharacters                 com.aeskreis.dungeonraider.controllers.NPCharacterController.list
+GET           /npcharacter/:id              com.aeskreis.dungeonraider.controllers.NPCharacterController.get(id: java.util.UUID)
+POST          /npcharacter/:id              com.aeskreis.dungeonraider.controllers.NPCharacterController.save(id: java.util.UUID)
+DELETE        /npcharacter/:id              com.aeskreis.dungeonraider.controllers.NPCharacterController.delete(id: java.util.UUID)
 
 # Player Characters
 
-GET           /pcharacters/:user_id         controllers.PCharacterController.list(user_id: java.util.UUID)
-GET           /pcharacter/:id               controllers.PCharacterController.get(id: java.util.UUID)
+GET           /pcharacters/:user_id         com.aeskreis.dungeonraider.controllers.PCharacterController.list(user_id: java.util.UUID)
+GET           /pcharacter/:id               com.aeskreis.dungeonraider.controllers.PCharacterController.get(id: java.util.UUID)
 
 # Friends
-GET           /friends/:user_id             controllers.FriendController.list(user_id: java.util.UUID)
-PUT           /friends/:user_id/request     controllers.FriendController.request(user_id: java.util.UUID)
-POST          /friends/:user_id/response    controllers.FriendController.response(user_id: java.util.UUID)
-DELETE        /friends/:user_id             controllers.FriendController.delete(user_id: java.util.UUID)
-GET           /friends/:user_id/pending     controllers.FriendController.pendingFriendRequests(user_id: java.util.UUID)
+GET           /friends/:user_id             com.aeskreis.dungeonraider.controllers.FriendController.list(user_id: java.util.UUID)
+PUT           /friends/:user_id/request     com.aeskreis.dungeonraider.controllers.FriendController.request(user_id: java.util.UUID)
+POST          /friends/:user_id/response    com.aeskreis.dungeonraider.controllers.FriendController.response(user_id: java.util.UUID)
+DELETE        /friends/:user_id             com.aeskreis.dungeonraider.controllers.FriendController.delete(user_id: java.util.UUID)
+GET           /friends/:user_id/pending     com.aeskreis.dungeonraider.controllers.FriendController.pendingFriendRequests(user_id: java.util.UUID)
 
 
 # Uploading
 
-POST          /upload/image                 controllers.UploadController.imageUpload
+POST          /upload/image                 com.aeskreis.dungeonraider.controllers.UploadController.imageUpload
 
-GET           /                             controllers.Assets.at(path="/public/html", file="index.html")
+GET           /                             com.aeskreis.dungeonraider.controllers.Assets.at(path="/public/html", file="index.html")
 
-OPTIONS       /*path                             controllers.GlobalController.checkPreFlight(path)
+OPTIONS       /*path                        com.aeskreis.dungeonraider.controllers.GlobalController.checkPreFlight(path)
 
 # Map static resources from the /public folder to the /assets URL path
-GET           /assets/*file         controllers.Assets.at(path="/public", file)
+GET           /assets/*file         com.aeskreis.dungeonraider.controllers.Assets.at(path="/public", file)
