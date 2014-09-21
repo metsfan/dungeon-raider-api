@@ -1,9 +1,9 @@
 package com.aeskreis.dungeonraider.controllers
 
 import play.api.mvc.Action
-import models.data.{TownData, UserData}
+import com.aeskreis.dungeonraider.models.data.{TownData, UserData}
 import play.api.libs.json.Json._
-import models.{UserProfile, User}
+import com.aeskreis.dungeonraider.models.{UserProfile, User}
 import scala.slick.lifted.TableQuery
 import java.util.UUID
 import com.aeskreis.dungeonraider.lib.json.UserParser

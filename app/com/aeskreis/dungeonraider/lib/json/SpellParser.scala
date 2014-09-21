@@ -2,16 +2,16 @@ package com.aeskreis.dungeonraider.lib.json
 
 import anorm.SqlParser._
 import anorm.RowParser
-import models._
+import com.aeskreis.dungeonraider.models._
 import play.api.libs.json.Json._
 import play.api.libs.json._
 import scala.collection.mutable
 import scala.Some
-import models.SpellEffect
-import models.CharClass
-import models.SpellTrigger
+import com.aeskreis.dungeonraider.models.SpellEffect
+import com.aeskreis.dungeonraider.models.CharClass
+import com.aeskreis.dungeonraider.models.SpellTrigger
 import play.api.libs.json.JsObject
-import models.Spell
+import com.aeskreis.dungeonraider.models.Spell
 import java.util.UUID
 import com.aeskreis.dungeonraider.lib.Global
 

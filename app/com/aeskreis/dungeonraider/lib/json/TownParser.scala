@@ -1,10 +1,10 @@
 package com.aeskreis.dungeonraider.lib.json
 
 import play.api.libs.json.Json._
-import models._
+import com.aeskreis.dungeonraider.models._
 import anorm.RowParser
 import anorm.~
-import models.Town
+import com.aeskreis.dungeonraider.models.Town
 import play.api.libs.json.JsValue
 
 /**

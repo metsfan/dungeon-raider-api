@@ -3,7 +3,7 @@ package com.aeskreis.dungeonraider.models.data
 import play.api.Play.current
 import scala.slick.driver.PostgresDriver.simple._
 import play.api.db.slick.DB
-import models._
+import com.aeskreis.dungeonraider.models._
 import java.util.UUID
 import com.aeskreis.dungeonraider.lib.Global
 import play.api.libs.json.Json._

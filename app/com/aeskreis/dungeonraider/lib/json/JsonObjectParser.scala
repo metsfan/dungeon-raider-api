@@ -1,6 +1,6 @@
 package com.aeskreis.dungeonraider.lib.json
 
-import models._
+import com.aeskreis.dungeonraider.models._
 import play.api.libs.json.Json._
 import play.api.libs.json._
 import java.util.UUID

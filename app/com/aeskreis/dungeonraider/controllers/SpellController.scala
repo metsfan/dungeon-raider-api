@@ -1,12 +1,12 @@
 package com.aeskreis.dungeonraider.controllers
 
 import play.api.libs.json.Json._
-import models.data.SpellData
+import com.aeskreis.dungeonraider.models.data.SpellData
 import play.api.mvc.Action
 import play.api.libs.json.JsValue
 import java.util.UUID
 import com.aeskreis.dungeonraider.lib.json.SpellParser
-import models.Spell
+import com.aeskreis.dungeonraider.models.Spell
 
 object SpellController extends BaseController {
   val spellData = new SpellData()

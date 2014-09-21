@@ -1,6 +1,6 @@
 package com.aeskreis.dungeonraider.lib.json
 
-import models.Friend
+import com.aeskreis.dungeonraider.models.Friend
 import play.api.libs.json._
 import play.api.libs.json.Json._
 

@@ -1,12 +1,12 @@
 package com.aeskreis.dungeonraider.lib.json
 
-import models._
+import com.aeskreis.dungeonraider.models._
 import play.api.libs.json.Json._
 import play.api.libs.json._
-import models.CharClass
-import models.PCharacter
-import models.SpellTrigger
-import models.Spell
+import com.aeskreis.dungeonraider.models.CharClass
+import com.aeskreis.dungeonraider.models.PCharacter
+import com.aeskreis.dungeonraider.models.SpellTrigger
+import com.aeskreis.dungeonraider.models.Spell
 
 /**
  * Created by Adam on 2/10/14.

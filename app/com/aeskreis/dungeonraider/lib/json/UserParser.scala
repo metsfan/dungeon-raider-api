@@ -3,10 +3,10 @@ package com.aeskreis.dungeonraider.lib.json
 import play.api.libs.json._
 import play.api.libs.json.Writes._
 import com.github.t3hnar.bcrypt._
-import models._
+import com.aeskreis.dungeonraider.models._
 import play.api.libs.json.Json._
 import anorm.RowParser
-import models.User
+import com.aeskreis.dungeonraider.models.User
 
 /**
  * Created by Adam on 5/25/14.

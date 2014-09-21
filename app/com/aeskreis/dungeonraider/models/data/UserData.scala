@@ -1,8 +1,8 @@
 package com.aeskreis.dungeonraider.models.data
 
-import models.{Users, UserProfile, UserAuth, User}
+import com.aeskreis.dungeonraider.models.{Users, UserProfile, UserAuth, User}
 import java.util.UUID
-import models.query.UserQuery
+import com.aeskreis.dungeonraider.models.query.UserQuery
 import com.github.t3hnar.bcrypt._
 import scala.slick.driver.PostgresDriver.simple._
 import play.api.Play.current

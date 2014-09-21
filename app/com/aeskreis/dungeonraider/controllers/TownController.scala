@@ -1,6 +1,6 @@
 package com.aeskreis.dungeonraider.controllers
 
-import models.data.TownData
+import com.aeskreis.dungeonraider.models.data.TownData
 import play.api.mvc.Action
 import java.util.UUID
 import com.aeskreis.dungeonraider.lib.json.TownParser

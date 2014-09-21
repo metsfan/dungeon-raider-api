@@ -49,9 +49,9 @@ GET           /friends/:user_id/pending     com.aeskreis.dungeonraider.controlle
 
 POST          /upload/image                 com.aeskreis.dungeonraider.controllers.UploadController.imageUpload
 
-GET           /                             com.aeskreis.dungeonraider.controllers.Assets.at(path="/public/html", file="index.html")
+#GET           /                             com.aeskreis.dungeonraider.controllers.Assets.at(path="/public/html", file="index.html")
 
 OPTIONS       /*path                        com.aeskreis.dungeonraider.controllers.GlobalController.checkPreFlight(path)
 
 # Map static resources from the /public folder to the /assets URL path
-GET           /assets/*file         com.aeskreis.dungeonraider.controllers.Assets.at(path="/public", file)
+#GET           /assets/*file         com.aeskreis.dungeonraider.controllers.Assets.at(path="/public", file)

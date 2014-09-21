@@ -2,7 +2,7 @@ package com.aeskreis.dungeonraider.lib.json
 
 import play.api.libs.json.Json._
 import play.api.libs.json._
-import models.NPCharacter
+import com.aeskreis.dungeonraider.models.NPCharacter
 
 /**
  * Created with IntelliJ IDEA.

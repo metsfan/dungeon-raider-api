@@ -1,13 +1,13 @@
 package com.aeskreis.dungeonraider.models.data
 
-import models._
-import models.query.TownQuery
+import com.aeskreis.dungeonraider.models._
+import com.aeskreis.dungeonraider.models.query.TownQuery
 import play.api.Play.current
 import scala.slick.driver.PostgresDriver.simple._
 import play.api.db.slick.DB
 import java.util.UUID
-import models.UserTown
-import models.Town
+import com.aeskreis.dungeonraider.models.UserTown
+import com.aeskreis.dungeonraider.models.Town
 import com.aeskreis.dungeonraider.lib.json.TownParser
 
 /**

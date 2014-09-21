@@ -1,7 +1,7 @@
 package com.aeskreis.dungeonraider.lib.json
 
 import play.api.libs.json.Json._
-import models.SpellEffect
+import com.aeskreis.dungeonraider.models.SpellEffect
 import play.api.libs.json.{JsResult, JsValue}
 
 /**

@@ -6,10 +6,11 @@ import com.aeskreis.dungeonraider.lib.{ServerCommands, Global}
 import org.apache.commons.io.EndianUtils
 import play.api.mvc._
 import java.util.UUID
-import models.data.{UserData, FriendData}
+import com.aeskreis.dungeonraider.models.data.{UserData, FriendData}
 import com.aeskreis.dungeonraider.lib.json.{UserParser, FriendParser}
-import models.{Friend, FriendStatus}
+import com.aeskreis.dungeonraider.models.{Friend, FriendStatus}
 import play.api.libs.json.Json
+import com.aeskreis.dungeonraider.lib.StreamAddins._
 
 /**
  * Created by Adam on 8/30/14.
@@ -51,10 +52,9 @@ object FriendController extends Controller {
               val requester = userData.getById(user_id)
               val message = new ByteArrayOutputStream()
               EndianUtils.writeSwappedInteger(message, ServerCommands.FriendRequest.id)
-              message.write(requestedUser.get.id.toString.getBytes("UTF-8"))
-              message.write('\0')
-              message.write(userParser.toJsonObject(requester.get).toString().getBytes("UTF-8"))
-              message.write('\0')
+              message.writeUUID(user_id)
+              message.writeUUID(requestedUser.get.id)
+              message.writeCString(userParser.toJsonObject(requester.get).toString())
 
               Global.consumerChannel.basicPublish("", "game_chat_server", null, message.toByteArray)
 
@@ -93,25 +93,23 @@ object FriendController extends Controller {
 
                   friend2.get.status = FriendStatus.Accepted.id
                   friendData.save(friend2.get)
+
+                  // Publish to chat server
+                  val requested = userData.getById(user_id)
+                  val message = new ByteArrayOutputStream()
+                  EndianUtils.writeSwappedInteger(message, ServerCommands.FriendResponse.id)
+
+                  message.writeUUID(requesterUser.get.id)
+                  message.writeUUID(user_id)
+                  message.writeCString(userParser.toJsonObject(requested.get).toString())
+
+                  Global.consumerChannel.basicPublish("", "game_chat_server", null, message.toByteArray)
                 }
                 case "reject" => {
                   friendData.delete(friend1.get.id)
                   friendData.delete(friend2.get.id)
                 }
               }
-
-              // Publish to chat server
-              val requested = userData.getById(user_id)
-              val message = new ByteArrayOutputStream()
-              EndianUtils.writeSwappedInteger(message, ServerCommands.FriendResponse.id)
-              message.write(requesterUser.get.id.toString.getBytes("UTF-8"))
-              message.write('\0')
-              message.write(userParser.toJsonObject(requested.get).toString().getBytes("UTF-8"))
-              message.write('\0')
-              message.write(action.getBytes("UTF-8"))
-              message.write('\0')
-
-              Global.consumerChannel.basicPublish("", "game_chat_server", null, message.toByteArray)
 
               Ok(Json.obj("success" -> true))
             } else {

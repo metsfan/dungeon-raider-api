@@ -1,8 +1,8 @@
 package com.aeskreis.dungeonraider.models.data
 
 import play.api.Play.current
-import models.query.PCharacterQuery
-import models.{CharClasses, PCharacters, CharClass, PCharacter}
+import com.aeskreis.dungeonraider.models.query.PCharacterQuery
+import com.aeskreis.dungeonraider.models.{CharClasses, PCharacters, CharClass, PCharacter}
 import scala.slick.driver.PostgresDriver.simple._
 import play.api.db.slick.DB
 import java.util.UUID

@@ -1,9 +1,9 @@
 package com.aeskreis.dungeonraider.lib.json
 
-import models.SpellTrigger
+import com.aeskreis.dungeonraider.models.SpellTrigger
 import play.api.libs.json.{JsResult, JsValue}
 import play.api.libs.json.Json._
-import models.SpellTrigger
+import com.aeskreis.dungeonraider.models.SpellTrigger
 
 /**
  * Created by Adam on 6/8/14.

@@ -1,10 +1,10 @@
 package com.aeskreis.dungeonraider.controllers
 
 import play.api.mvc._
-import models.data.{SpellData, NPCharacterData}
+import com.aeskreis.dungeonraider.models.data.{SpellData, NPCharacterData}
 import play.api.libs.json.Json._
 import java.util.{UUID, NoSuchElementException}
-import models.NPCharacter
+import com.aeskreis.dungeonraider.models.NPCharacter
 import com.aeskreis.dungeonraider.lib.json.{NPCharacterParser, JsonObjectParser}
 
 /**

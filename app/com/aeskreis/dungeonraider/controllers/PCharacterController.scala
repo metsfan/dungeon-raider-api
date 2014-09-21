@@ -1,8 +1,8 @@
 package com.aeskreis.dungeonraider.controllers
 
-import models.data.{SpellData, PCharacterData}
+import com.aeskreis.dungeonraider.models.data.{SpellData, PCharacterData}
 import play.api.mvc.Action
-import models.{Spell}
+import com.aeskreis.dungeonraider.models.{Spell}
 import java.util.UUID
 import com.aeskreis.dungeonraider.lib.json.PCharacterParser
 
